@@ -44,5 +44,6 @@ router.post('/logout', (req,res) =>{
         if(err) return res.status(500).json({message: 'Logout failed'});
         res.json({message: 'Logout successful'});
     });
-}
-)
+})
+
+export default router;
