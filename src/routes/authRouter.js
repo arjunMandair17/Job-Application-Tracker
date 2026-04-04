@@ -16,7 +16,7 @@ router.post('/register', (req,res) =>{
 
     req.session.userId = userId; // Store user ID in session
 
-    res.json({message: 'User registered successfully'});
+    res.status(201).json({success: true ,message: 'User registered successfully'});
 })
 
 // Login route
@@ -27,22 +27,22 @@ router.post('/login', (req,res) =>{
     const user = db.prepare(`SELECT * FROM users WHERE username = ?`);
     const validateUser = user.get(username);
 
-    if(!validateUser) return res.status(404).json({message: 'User not found'});
+    if(!validateUser) return res.status(404).json({success: false, message: 'User not found'});
 
     const valid = bcrypt.compareSync(password, validateUser.password);
     if(valid){
         req.session.userId = validateUser.id; // Store user ID in session
-        res.json({message: 'Login successful'});
+        res.json({success: true, message: 'Login successful'});
     }else{
-        res.status(401).json({message: 'Incorrect password'});
+        res.status(401).json({success: false, message: 'Incorrect password'});
     }
 })
 
 // Logout route
 router.post('/logout', (req,res) =>{
     req.session.destroy(err => {
-        if(err) return res.status(500).json({message: 'Logout failed'});
-        res.json({message: 'Logout successful'});
+        if(err) return res.status(500).json({success: false, message: 'Logout failed'});
+        res.json({success: true, message: 'Logout successful'});
     });
 })
 
