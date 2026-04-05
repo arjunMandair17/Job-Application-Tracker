@@ -29,7 +29,7 @@ export default function Login() {
 
       if (!hasUppercase || !hasLowercase || !hasNumber) {
         setPopupMessage(
-          "Password must include at least one uppercase letter, one lowercase letter, and one number.",
+          "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, and one number.",
         );
         setPopupOpen(true);
         return;

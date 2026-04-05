@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -13,9 +13,11 @@ import { Button, Layout, Menu, theme } from "antd";
 import { useNavigate } from "react-router-dom";
 import Hero from "../components/Hero";
 import JobApps from "./JobApps";
+import NewApp from "./NewApp";
+import Profile from "./Profile";
 const { Header, Sider, Content } = Layout;
 
-const isAuthenticated = async () => {   // change this to useEffect later
+const checkSession = async () => {
   // check if the user has an active session by sending a request to the backend
   const response = await fetch("http://localhost:3000/auth/session", {
     method: "GET",
@@ -27,10 +29,21 @@ const isAuthenticated = async () => {   // change this to useEffect later
 const Home = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [activeMenuKey, setActiveMenuKey] = useState("1");
+  const [isAuth, setIsAuth] = useState(false);
   const navigate = useNavigate();
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
+
+  useEffect(() => {
+    const loadAuth = async () => {
+      const sessionActive = await checkSession();
+      setIsAuth(sessionActive);
+    };
+
+    loadAuth();
+  }, []);
+
   return (
     <>
       <Layout style={{ minHeight: "100vh" }}>
@@ -89,11 +102,11 @@ const Home = () => {
 
             <Button
               type="primary"
-              icon={ isAuthenticated ? <LoginOutlined/> : <LogoutOutlined />}
+              icon={isAuth ? <LogoutOutlined /> : <LoginOutlined />}
               style={{ marginLeft: "auto", marginRight: 24, marginBottom: 0 }}
               onClick={() => navigate("/login")}
             >
-              {isAuthenticated ? "Log In" : "Log Out"}
+              {isAuth ? "Log Out" : "Log In"}
             </Button>
           </Header>
           <Content
@@ -118,7 +131,9 @@ const Home = () => {
             </>
             )}
 
-            {activeMenuKey !== "1" && activeMenuKey !== "3" && <p>Coming soon.</p>}
+            {activeMenuKey === "2" && (<Profile isAuth={isAuth} onViewApps={() => setActiveMenuKey("3")} />)}
+
+            {activeMenuKey === "4" && <NewApp />}
 
           </Content>
         </Layout>

@@ -6,10 +6,15 @@ import { useState } from "react";
 const JobApps = () => {
     const [filter, setFilter] = useState("all");
     const [searchTerm, setSearchTerm] = useState("");
+    const items = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
+
+    const visibleItems = items.filter((item) =>
+        String(item).toLowerCase().includes(searchTerm.trim().toLowerCase()) // add filtering logic once we have actual data
+    );
 
     return (
         <div>
-            <Search>
+            <Search onSearchChange={setSearchTerm}>
                 <Select
                     placeholder="Filter by status"
                     options={[
@@ -26,7 +31,7 @@ const JobApps = () => {
             </Search>
 
             
-            <ItemView items={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]} />
+            <ItemView items={visibleItems} />
 
         </div>
     );

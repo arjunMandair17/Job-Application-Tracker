@@ -2,8 +2,14 @@ import { Form, Input } from "antd";
 import { useState } from "react";
 import { SearchOutlined } from "@ant-design/icons";
 
-const Search = ({ children }) => {
+const Search = ({ children, onSearchChange }) => {
   const [searchTerm, setSearchTerm] = useState("");
+
+  const handleChange = (e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    onSearchChange?.(value);
+  };
 
   return (
     <div className="!flex !items-center !justify-center !gap-4 !mb-4 !flex-wrap">
@@ -17,7 +23,7 @@ const Search = ({ children }) => {
             size="large"
             placeholder="Search job applications"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={handleChange}
             className="!w-[720px] !max-w-[90vw] !h-12 !text-base"
           />
         </Form.Item>
