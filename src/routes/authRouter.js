@@ -1,6 +1,7 @@
 import  express  from 'express';
-import expressSession from 'express-session';
 import bcrypt from 'bcryptjs';
+import authMiddleware from '../middleware/authMiddleware.js';
+import db from '../db.js';
 
 const router =  express.Router();
 
@@ -44,6 +45,11 @@ router.post('/logout', (req,res) =>{
         if(err) return res.status(500).json({success: false, message: 'Logout failed'});
         res.json({success: true, message: 'Logout successful'});
     });
+})
+
+// Session check route
+router.get('/session', authMiddleware, async (req, res) => {
+    res.sendStatus(200);    // if the user has an active session, this route will run after authMiddleware, which confirms it
 })
 
 export default router;
