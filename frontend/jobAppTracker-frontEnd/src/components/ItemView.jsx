@@ -1,7 +1,8 @@
 import { Row, Col } from "antd";
+import JobAppView from "./JobAppView";
 const ItemView = ({ items = [] }) => {
   if (!items.length) {
-    return <p>You have no applications, consider adding some!</p>;
+    return <p>Nothing to tell you!</p>;
   }
 
   return (
@@ -16,7 +17,7 @@ const ItemView = ({ items = [] }) => {
                 borderRadius: 8,
               }}
             >
-              {typeof item === "object" ? JSON.stringify(item) : String(item)}
+              <JobAppView item={item} />
             </div>
           </Col>
         ))}

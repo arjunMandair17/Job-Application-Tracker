@@ -37,10 +37,12 @@ export default function Login() {
     }
 
     // send a request to the backedn to either log in or sign up the user
+    let endpoint = signInType === "Login" ? "login" : "register";
     const response = await fetch(
-      `http://127.0.0.1:3000/auth/${signInType.toLowerCase()}`,
+      `http://localhost:3000/auth/${endpoint}`,
       {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },

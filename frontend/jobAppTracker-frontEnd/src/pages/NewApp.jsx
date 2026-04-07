@@ -30,7 +30,7 @@ const NewApp = () => {
 
         if (!response.ok) {
             const error = await response.json().catch(() => ({}));
-            message.error(error.message || "Failed to add application");
+            message.error(error.error || error.message || "Failed to add application");
             return;
         }
 

@@ -12,12 +12,17 @@ db.exec(`
 
 // Job applications table
 db.exec(`
-    CREATE TABLE job-apps (
+    CREATE TABLE jobApplications (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT,
         company TEXT,
         description TEXT,
+        date_applied TEXT,
+        status TEXT,
         filename TEXT,
+        user_id INTEGER,
         FOREIGN KEY(user_id) REFERENCES users(id)
     )
 `)
+
+export default db;

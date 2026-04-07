@@ -1,16 +1,38 @@
 import Search from "../components/Search";
 import ItemView from "../components/ItemView";
 import { Select } from "antd";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-const JobApps = () => {
+const JobApps =  () => {
     const [filter, setFilter] = useState("all");
     const [searchTerm, setSearchTerm] = useState("");
-    const items = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
 
-    const visibleItems = items.filter((item) =>
-        String(item).toLowerCase().includes(searchTerm.trim().toLowerCase()) // add filtering logic once we have actual data
-    );
+    const [items, setItems] = useState([]);
+
+    useEffect(() => {
+        const fetchItems = async () => {
+            const response = await fetch("http://localhost:3000/jobApps", {
+                method: "GET",
+                credentials: "include",
+            });
+            const data = await response.json();
+            setItems(data.apps || []);
+        };
+
+        fetchItems();
+    }, []);
+
+    const visibleItems = items.filter((item) => {
+        const query = searchTerm.trim().toLowerCase();
+        if (!query) return true;
+
+        return (
+            String(item.title || "").toLowerCase().includes(query) ||
+            String(item.company || "").toLowerCase().includes(query) ||
+            String(item.description || "").toLowerCase().includes(query) ||
+            String(item.status || "").toLowerCase().includes(query)
+        );
+    });
 
     return (
         <div>
