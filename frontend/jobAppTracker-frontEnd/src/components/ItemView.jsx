@@ -2,7 +2,7 @@ import { Row, Col } from "antd";
 import JobAppView from "./JobAppView";
 const ItemView = ({ items = [] }) => {
   if (!items.length) {
-    return <p>Nothing to tell you!</p>;
+    return <p className="text-center text-gray-500">No such items found.</p>;
   }
 
   return (

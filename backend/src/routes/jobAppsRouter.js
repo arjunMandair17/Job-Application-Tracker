@@ -112,10 +112,10 @@ router.post('/', upload.single('resume'), async (req, res) => {
         const result = addApp.run(
             company,
             title,
-            description || '',
+            (description || ''),
             '',
-            date_applied || null,
-            status || null,
+            (date_applied || null),
+            (status || null),
             req.session.userId
         );
 

@@ -11,32 +11,25 @@ const { Title, Paragraph } = Typography;
 const Hero = ({ onAddApplication, onViewApplications }) => {
   return (
     <>
-      <style>{`
-        .hero-fade-up {
-          opacity: 0;
-          transform: translateY(10px);
-          animation: heroFadeUp 500ms ease forwards;
-        }
+      <div
+        className="bg-gradient-to-br from-slate-50 via-white to-blue-50 py-12 text-center"
+        style={{
+          marginBottom: 18,
+          borderRadius: 20,
+          border: "1px solid rgba(148,163,184,0.25)",
+          boxShadow: "0 18px 45px rgba(15,23,42,0.08)",
+          backgroundImage:
+            "radial-gradient(circle at top, rgba(59,130,246,0.10), transparent 40%), linear-gradient(135deg, rgba(248,250,252,1) 0%, rgba(239,246,255,1) 100%)",
+        }}
+      >
+        <h1 className="text-5xl font-black tracking-[0.18em] uppercase !text-slate-900 drop-shadow-sm">
+          Job-Vault
+        </h1>
+        <h3 className="mt-3 text-sm font-semibold uppercase tracking-[0.35em] text-slate-500">
+          Stay organized, stay ahead.
+        </h3>
+      </div>
 
-        .hero-intro {
-          width: 100%;
-          text-align: center;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-        }
-
-        .hero-delay-1 { animation-delay: 100ms; }
-        .hero-delay-2 { animation-delay: 180ms; }
-        .hero-delay-3 { animation-delay: 260ms; }
-
-        @keyframes heroFadeUp {
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
 
       <Card
         variant="borderless"
@@ -49,13 +42,16 @@ const Hero = ({ onAddApplication, onViewApplications }) => {
         }}
       >
         <Space direction="vertical" size={28} style={{ width: "100%" }}>
-          <div className="hero-intro">
-            <Space
-              wrap
-              size={10}
-              className="hero-fade-up"
-              style={{ justifyContent: "center" }}
-            >
+          <div
+            style={{
+              width: "100%",
+              textAlign: "center",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <Space wrap size={10} style={{ justifyContent: "center" }}>
               <Tag color="blue" style={{ padding: "4px 10px", fontSize: 14 }}>
                 Focus
               </Tag>
@@ -75,13 +71,11 @@ const Hero = ({ onAddApplication, onViewApplications }) => {
                 lineHeight: 1.15,
                 maxWidth: 920,
               }}
-              className="hero-fade-up hero-delay-1"
             >
               Keep your job hunt organized and forward facing.
             </Title>
-            
-            <br></br>
 
+            <br></br>
 
             <Paragraph
               style={{
@@ -90,9 +84,8 @@ const Hero = ({ onAddApplication, onViewApplications }) => {
                 fontSize: 18,
                 lineHeight: 1.8,
               }}
-              className="hero-fade-up hero-delay-1"
             >
-              Job Application Tracker helps you capture every application in one
+              Job-Vault helps you capture every application in one
               place, monitor where each role sits in your pipeline, and remember
               key details before follow-ups. Instead of scattered notes and
               tabs, you get a clear system for managing your search from first
@@ -106,23 +99,26 @@ const Hero = ({ onAddApplication, onViewApplications }) => {
                 fontSize: 17,
                 lineHeight: 1.8,
               }}
-              className="hero-fade-up hero-delay-2"
             >
               Whether you are applying to internships, new grad roles, or
               mid-level positions, this app gives you a practical command center
-              to stay consistent and keep your opportunities moving.
+              to stay consistent and lay the foundation for a successful career
+              in any field.
             </Paragraph>
           </div>
 
-          <Alert
-            className="hero-fade-up hero-delay-2"
-            type="info"
-            showIcon
-            icon={<ThunderboltOutlined />}
-            message="Use this app to track applications, interview stages, deadlines, and next actions."
-          />
+          <div style={{ width: "100%", display: "flex", justifyContent: "center" }}>
+            <Alert
+              type="info"
+              showIcon
+              icon={<ThunderboltOutlined />}
+              message="Use this app to track applications, interview stages, deadlines, and next actions."
+              style={{ width: "100%", maxWidth: 960 }}
+              className="text-center"
+            />
+          </div>
 
-          <Row gutter={[20, 20]} className="hero-fade-up hero-delay-2">
+          <Row gutter={[20, 20]}>
             <Col xs={24} md={8}>
               <Card
                 style={{ borderRadius: 12, minHeight: 148 }}
@@ -171,23 +167,27 @@ const Hero = ({ onAddApplication, onViewApplications }) => {
             </Col>
           </Row>
 
-          <Space size={14} wrap className="hero-fade-up hero-delay-3">
-            <Button
-              type="primary"
-              size="large"
-              icon={<PlusOutlined />}
-              onClick={onAddApplication}
-            >
-              Add Application
-            </Button>
-            <Button
-              size="large"
-              icon={<FolderOpenOutlined />}
-              onClick={onViewApplications}
-            >
-              View Applications
-            </Button>
-          </Space>
+          <div
+            style={{ width: "100%", display: "flex", justifyContent: "center" }}
+          >
+            <Space size={14} wrap>
+              <Button
+                type="primary"
+                size="large"
+                icon={<PlusOutlined />}
+                onClick={onAddApplication}
+              >
+                Add Application
+              </Button>
+              <Button
+                size="large"
+                icon={<FolderOpenOutlined />}
+                onClick={onViewApplications}
+              >
+                View Applications
+              </Button>
+            </Space>
+          </div>
         </Space>
       </Card>
     </>

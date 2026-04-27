@@ -2,7 +2,11 @@ import { Input, Button, Form, Upload, message } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { useState } from "react";
 
-const NewApp = () => {
+
+    
+
+const EditApp = ({ id }) => {
+    
     const [title, setTitle] = useState("");
     const [company, setCompany] = useState("");
     const [dateApplied, setDateApplied] = useState("");
@@ -20,11 +24,11 @@ const NewApp = () => {
         formData.append("status", status);
 
         if (resumeFile) {
-            formData.append("resume", resumeFile);
+            formData.append("file", resumeFile);
         }
 
-        const response = await fetch("http://localhost:3000/jobApps", {
-            method: "POST",
+        const response = await fetch("http://localhost:3000/jobApps/" + id, {
+            method: "PUT",
             credentials: "include",
             body: formData,
         });
@@ -35,7 +39,7 @@ const NewApp = () => {
             return;
         }
 
-        message.success("Job application added successfully");
+        message.success("Edits applied successfully");
         setTitle("");
         setCompany("");
         setDateApplied("");
@@ -43,12 +47,11 @@ const NewApp = () => {
         setDescription("");
         setResumeFile(null);
     };
-
     return (
         <>
 
             <h1 className="!text-3xl !font-bold !text-blue-500 !mb-4 !text-center"> 
-                Add a new Job Application: 
+                Edit Job Application: 
             </h1>
 
             <Form
@@ -91,7 +94,7 @@ const NewApp = () => {
 
 
                     <Button type="primary" size="large" htmlType="submit" className="!px-6 !h-12 !text-lg text-white !bg-blue-600 hover:!bg-blue-700 !w-60 !self-center">
-                        Add Application
+                        Submit Changes
                     </Button>
 
             </Form>
@@ -99,6 +102,6 @@ const NewApp = () => {
         </>
 
     )
-}
 
-export default NewApp;
+};
+export default EditApp;

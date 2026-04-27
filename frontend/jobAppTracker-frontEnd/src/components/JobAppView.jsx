@@ -10,9 +10,9 @@ const JobAppView = ({ item }) => {
 
   return (
     
-    <div className="!p-4 !border !rounded-lg !shadow-md text-center !text-black" onClick={() =>navigate(`/jobApps/${item.id}`)}>
-        <h2>{item.title}</h2>
-        <p>{item.company}</p>
+    <div className="!p-4 !border !rounded-lg !shadow-md text-center !text-black cursor-pointer" onClick={() =>navigate(`/jobApps/${item.id}`)}>
+        <h2 className="!text-xl !font-bold !text-blue-500">{item.title}</h2>
+        <p className="!text-lg">{item.company}</p>
         <p className="!text-sm !text-gray-500">{`Applied on ${item.date_applied}`}</p>
     </div>
   )

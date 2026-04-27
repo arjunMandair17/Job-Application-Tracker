@@ -52,4 +52,18 @@ router.get('/session', authMiddleware, async (req, res) => {
     res.sendStatus(200);    // if the user has an active session, this route will run after authMiddleware, which confirms it
 })
 
+router.get('/profile', authMiddleware, async (req, res) => {
+    try {
+        const getUser = db.prepare(`SELECT id, username FROM users WHERE id = ?`);
+        const user = getUser.get(req.session.userId);
+        if (!user) {
+            return res.status(404).json({success: false, message: 'User not found'});
+        }
+
+        return res.json({success: true, user});
+    } catch (error) {
+        return res.status(500).json({success: false, message: 'Failed to fetch user profile', error: error.message});
+    }
+});
+
 export default router;

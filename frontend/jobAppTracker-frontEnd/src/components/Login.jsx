@@ -72,6 +72,8 @@ export default function Login() {
       </Modal>
 
       <div className="min-h-screen flex flex-col items-center justify-start pt-10 px-4">
+        <h1 className="text-5xl tracking-[0.18em] uppercase !text-blue-500 drop-shadow-sm mb-4">Job-Vault</h1>
+
         <h1 className="text-3xl font-bold mb-4">{signInType}:</h1>
 
         <Form className="w-full max-w-lg p-8 rounded-lg shadow-md">

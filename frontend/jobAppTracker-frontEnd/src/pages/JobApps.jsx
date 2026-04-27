@@ -24,6 +24,12 @@ const JobApps =  () => {
 
     const visibleItems = items.filter((item) => {
         const query = searchTerm.trim().toLowerCase();
+        const status = String(item.status || "").toLowerCase();
+
+        const matchesStatus =
+            filter === "all" || status.includes(filter.toLowerCase());
+
+        if (!matchesStatus) return false;
         if (!query) return true;
 
         return (
@@ -41,7 +47,7 @@ const JobApps =  () => {
                     placeholder="Filter by status"
                     options={[
                         { value: "all", label: "All Applications" },
-                        { value: "pending", label: "Pending" },
+                        { value: "applied", label: "Applied" },
                         { value: "interview", label: "In Interview" },
                         { value: "rejected", label: "Rejected" },
                         { value: "offered", label: "Offered" }

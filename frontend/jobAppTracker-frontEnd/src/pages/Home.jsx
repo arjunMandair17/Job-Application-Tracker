@@ -100,6 +100,8 @@ const Home = () => {
               }}
             />
 
+            <p className="flex-1 text-md font-semibold !text-center">Welcome to Job-Vault, {isAuth ? "User" : "Guest"}!</p>
+
             <Button
               type="primary"
               icon={isAuth ? <LogoutOutlined /> : <LoginOutlined />}
