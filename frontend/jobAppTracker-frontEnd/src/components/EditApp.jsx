@@ -5,13 +5,14 @@ import { useState } from "react";
 
     
 
-const EditApp = ({ id }) => {
+const EditApp = ({ id, curInput }) => {
     
-    const [title, setTitle] = useState("");
-    const [company, setCompany] = useState("");
-    const [dateApplied, setDateApplied] = useState("");
-    const [status, setStatus] = useState("");
-    const [description, setDescription] = useState("");
+    const [title, setTitle] = useState(curInput.title);
+    const [company, setCompany] = useState(curInput.company);
+    const [dateApplied, setDateApplied] = useState(curInput.date_applied);
+    const [status, setStatus] = useState(curInput.status);
+    const [description, setDescription] = useState(curInput.description);
+    const [applicationLink, setApplicationLink] = useState(curInput.application_link);
     const [resumeFile, setResumeFile] = useState(null);
 
     const handleSubmit = async () => {
@@ -22,9 +23,10 @@ const EditApp = ({ id }) => {
         formData.append("description", description);
         formData.append("date_applied", dateApplied);
         formData.append("status", status);
+        formData.append("application_link", applicationLink);
 
         if (resumeFile) {
-            formData.append("file", resumeFile);
+            formData.append("resume", resumeFile);
         }
 
         const response = await fetch("http://localhost:3000/jobApps/" + id, {
@@ -45,6 +47,7 @@ const EditApp = ({ id }) => {
         setDateApplied("");
         setStatus("");
         setDescription("");
+        setApplicationLink("");
         setResumeFile(null);
     };
     return (
@@ -73,6 +76,9 @@ const EditApp = ({ id }) => {
 
                     <h4>Notes</h4>
                     <Input placeholder="Job description, or any relevant notes" value={description} onChange={(e) => setDescription(e.target.value)} />
+                    
+                    <h4>Job Application Link</h4>
+                    <Input placeholder="https://example.com/job-posting" value={applicationLink} onChange={(e) => setApplicationLink(e.target.value)} />
                     
                     <div className="!flex !flex-col !gap-2 !text-center !text-lg">
                         <h4>Upload Resume</h4>

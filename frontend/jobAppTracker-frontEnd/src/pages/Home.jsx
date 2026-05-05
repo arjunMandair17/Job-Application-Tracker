@@ -17,19 +17,11 @@ import NewApp from "./NewApp";
 import Profile from "./Profile";
 const { Header, Sider, Content } = Layout;
 
-const checkSession = async () => {
-  // check if the user has an active session by sending a request to the backend
-  const response = await fetch("http://localhost:3000/auth/session", {
-    method: "GET",
-    credentials: "include", // include cookies in the request
-  });
-  return response.ok;
-};
-
 const Home = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [activeMenuKey, setActiveMenuKey] = useState("1");
   const [isAuth, setIsAuth] = useState(false);
+  const [username, setUsername] = useState("Guest");
   const navigate = useNavigate();
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -37,12 +29,44 @@ const Home = () => {
 
   useEffect(() => {
     const loadAuth = async () => {
-      const sessionActive = await checkSession();
-      setIsAuth(sessionActive);
+      try {
+        const response = await fetch("http://localhost:3000/auth/profile", {
+          method: "GET",
+          credentials: "include",
+        });
+
+        if (!response.ok) {
+          setIsAuth(false);
+          setUsername("Guest");
+          return;
+        }
+
+        const profile = await response.json();
+        setIsAuth(true);
+        setUsername(profile.user.username || "User");
+      } catch {
+        setIsAuth(false);
+        setUsername("Guest");
+      }
     };
 
     loadAuth();
   }, []);
+
+  const handleLogout = async () => {
+    try {
+      await fetch("http://localhost:3000/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+    } finally {
+      setIsAuth(false);
+      setUsername("Guest");
+      navigate("/login");
+    }
+  };
+
+
 
   return (
     <>
@@ -100,13 +124,13 @@ const Home = () => {
               }}
             />
 
-            <p className="flex-1 text-md font-semibold !text-center">Welcome to Job-Vault, {isAuth ? "User" : "Guest"}!</p>
+            <p className="flex-1 text-md font-semibold !text-center">Welcome to Job-Vault, {username}!</p>
 
             <Button
               type="primary"
               icon={isAuth ? <LogoutOutlined /> : <LoginOutlined />}
               style={{ marginLeft: "auto", marginRight: 24, marginBottom: 0 }}
-              onClick={() => navigate("/login")}
+              onClick={isAuth ? handleLogout : () => navigate("/login")}
             >
               {isAuth ? "Log Out" : "Log In"}
             </Button>
@@ -129,13 +153,13 @@ const Home = () => {
 
             {activeMenuKey === "3" && (
             <>
-                <JobApps />
+                <JobApps isAuth={isAuth}/>
             </>
             )}
 
             {activeMenuKey === "2" && (<Profile isAuth={isAuth} onViewApps={() => setActiveMenuKey("3")} />)}
 
-            {activeMenuKey === "4" && <NewApp />}
+            {activeMenuKey === "4" && <NewApp isAuth={isAuth}/>}
 
           </Content>
         </Layout>

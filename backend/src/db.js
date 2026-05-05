@@ -20,6 +20,7 @@ db.exec(`
         date_applied TEXT,
         status TEXT,
         filename TEXT,
+        application_link TEXT,
         user_id INTEGER,
         FOREIGN KEY(user_id) REFERENCES users(id)
     )

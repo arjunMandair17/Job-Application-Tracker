@@ -98,7 +98,7 @@ router.get('/:id', async (req, res) => {
 // add a job application
 router.post('/', upload.single('resume'), async (req, res) => {
     try {
-        const { title, company, description, date_applied, status } = req.body;
+        const { title, company, description, date_applied, status, application_link } = req.body;
         const resume = req.file;
 
         if (!title || !company) {
@@ -106,7 +106,7 @@ router.post('/', upload.single('resume'), async (req, res) => {
         }
 
         const addApp = db.prepare(
-            `INSERT INTO jobApplications (company, title, description, filename, date_applied, status, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)`
+            `INSERT INTO jobApplications (company, title, description, filename, date_applied, status, application_link, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
         );
 
         const result = addApp.run(
@@ -116,6 +116,7 @@ router.post('/', upload.single('resume'), async (req, res) => {
             '',
             (date_applied || null),
             (status || null),
+            (application_link || ''),
             req.session.userId
         );
 
@@ -123,9 +124,6 @@ router.post('/', upload.single('resume'), async (req, res) => {
         let resumeKey = '';
 
         if (resume) {
-            if (!process.env.AWS_S3_BUCKET_NAME) {
-                return res.status(500).json({ message: 'S3 bucket env var is missing' });
-            }
 
             resumeKey = buildResumeKey(req.session.userId, appId, resume.originalname);
 
@@ -154,7 +152,7 @@ router.post('/', upload.single('resume'), async (req, res) => {
 router.put('/:id', upload.single('resume'), async (req, res) => {
     try {
         const { id } = req.params;
-        const { title, company, description, date_applied, status } = req.body;
+        const { title, company, description, date_applied, status, application_link } = req.body;
         const resume = req.file;
 
         const getExisting = db.prepare(`SELECT * FROM jobApplications WHERE id = ? AND user_id = ?`);
@@ -167,9 +165,6 @@ router.put('/:id', upload.single('resume'), async (req, res) => {
         let resumeKey = existing.filename;
 
         if (resume) {
-            if (!process.env.AWS_S3_BUCKET_NAME) {
-                return res.status(500).json({ message: 'S3 bucket env var is missing' });
-            }
 
             resumeKey = buildResumeKey(req.session.userId, id, resume.originalname);
 
@@ -193,7 +188,7 @@ router.put('/:id', upload.single('resume'), async (req, res) => {
         }
 
         const updateApp = db.prepare(
-            `UPDATE jobApplications SET title = ?, company = ?, description = ?, filename = ?, date_applied = ?, status = ? WHERE id = ? AND user_id = ?`
+            `UPDATE jobApplications SET title = ?, company = ?, description = ?, filename = ?, date_applied = ?, status = ?, application_link = ? WHERE id = ? AND user_id = ?`
         );
 
         updateApp.run(
@@ -203,6 +198,7 @@ router.put('/:id', upload.single('resume'), async (req, res) => {
             resumeKey,
             date_applied || existing.date_applied,
             status || existing.status,
+            application_link || existing.application_link,
             id,
             req.session.userId
         );
@@ -211,6 +207,47 @@ router.put('/:id', upload.single('resume'), async (req, res) => {
         res.json({ message: 'Job application updated successfully', resumeUrl: updatedResumeUrl });
     } catch (error) {
         res.status(500).json({ message: 'Failed to update job application', error: error.message });
+    }
+});
+
+
+
+router.delete("/:id", async (req, res) => {
+    try {
+
+        // get the app first so we can find the S3 key for the resume
+        const { id } = req.params;
+        const getApp = db.prepare(`SELECT * FROM jobApplications WHERE id = ? AND user_id = ?`);
+        const app = getApp.get(id, req.session.userId);
+
+        if(!app) {
+            return res.status(404).json({ message: 'Job application not found' });
+        }
+
+        const resumeKey = app.filename;
+
+        // delete the resume from S3 if it exists before deleting the app record from the database
+        if (resumeKey && process.env.AWS_S3_BUCKET_NAME) {
+            const s3 = getS3Client();
+            const deleteCommand = new DeleteObjectCommand({
+                Bucket: process.env.AWS_S3_BUCKET_NAME,
+                Key: resumeKey
+            });
+            await s3.send(deleteCommand);
+        }
+
+        // now that S3 is handled, delete the app from the database
+        const deleteApp = db.prepare(`DELETE FROM jobApplications WHERE id = ? AND user_id = ?`);
+        const result = deleteApp.run(id, req.session.userId);
+
+        if (result.changes === 0) {
+            return res.status(404).json({ message: 'Job application not found' });
+        }
+
+        res.json({ message: 'Job application deleted successfully' });
+
+    }catch (error) {
+        res.status(500).json({ message: 'Failed to delete job application', error: error.message });
     }
 });
 

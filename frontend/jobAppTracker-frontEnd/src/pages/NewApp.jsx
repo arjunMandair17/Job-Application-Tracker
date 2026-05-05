@@ -1,14 +1,18 @@
 import { Input, Button, Form, Upload, message } from "antd";
+import { FrownOutlined } from "@ant-design/icons";
 import { UploadOutlined } from "@ant-design/icons";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-const NewApp = () => {
+const NewApp = ({ isAuth }) => {
     const [title, setTitle] = useState("");
     const [company, setCompany] = useState("");
     const [dateApplied, setDateApplied] = useState("");
     const [status, setStatus] = useState("");
     const [description, setDescription] = useState("");
+    const [applicationLink, setApplicationLink] = useState("");
     const [resumeFile, setResumeFile] = useState(null);
+    const navigate = useNavigate();
 
     const handleSubmit = async () => {
         const formData = new FormData();
@@ -18,6 +22,7 @@ const NewApp = () => {
         formData.append("description", description);
         formData.append("date_applied", dateApplied);
         formData.append("status", status);
+        formData.append("application_link", applicationLink);
 
         if (resumeFile) {
             formData.append("resume", resumeFile);
@@ -41,8 +46,35 @@ const NewApp = () => {
         setDateApplied("");
         setStatus("");
         setDescription("");
+        setApplicationLink("");
         setResumeFile(null);
     };
+
+    if (!isAuth) {
+        return (
+            <div className="min-h-[calc(100vh-112px)] flex items-center justify-center px-4 py-10 bg-gradient-to-br from-slate-50 via-white to-blue-50">
+                <div className="w-full max-w-xl rounded-2xl border border-slate-200 bg-white/90 p-10 text-center shadow-lg backdrop-blur-sm">
+                <h1 className="mb-3 flex items-center justify-center gap-3 text-3xl font-bold !text-blue-500">
+                <FrownOutlined className="!text-blue-500" />
+                    Sign in to store a new job application!
+                </h1>
+                <p className="mb-8 text-base leading-7 text-slate-600">
+                    Sign in to organize your job search, all in one place.
+                </p>
+                <br></br>
+
+                <Button
+                    onClick={() => navigate("/login")}
+                    className="h-11 px-6 text-base font-semibold"
+                    type="primary"
+                    size="large"
+                >
+                    Sign In
+                </Button>
+                </div>
+            </div>
+        );
+  }
 
     return (
         <>
@@ -70,6 +102,9 @@ const NewApp = () => {
 
                     <h4>Notes</h4>
                     <Input placeholder="Job description, or any relevant notes" value={description} onChange={(e) => setDescription(e.target.value)} />
+                    
+                    <h4>Job Application Link</h4>
+                    <Input placeholder="https://example.com/job-posting" value={applicationLink} onChange={(e) => setApplicationLink(e.target.value)} />
                     
                     <div className="!flex !flex-col !gap-2 !text-center !text-lg">
                         <h4>Upload Resume</h4>
