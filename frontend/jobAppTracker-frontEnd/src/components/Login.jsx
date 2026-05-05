@@ -5,6 +5,8 @@ import { useState } from "react";
 import { Modal } from "antd";
 import { useNavigate } from "react-router-dom";
 import { HomeOutlined } from "@ant-design/icons";
+import { GoogleLogin } from "@react-oauth/google";
+import { message } from "antd";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -17,6 +19,45 @@ export default function Login() {
     signInType === "Login"
       ? "Don't have an account? Sign Up!"
       : "Already have an account? Login!";
+
+
+  const handleGoogleLoginSuccess = async (credentialResponse) => {
+    
+    try {
+      const response = await fetch("http://localhost:3000/auth/google", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ credential: credentialResponse.credential }),
+      });
+
+      const result = await response.json();
+
+      // use parsed JSON (`result`) not the fetch Response object
+      if (result && result.success) {
+        message.success(result.message || "Google login successful");
+        navigate("/");
+        return;
+      } else {
+        setPopupMessage(result.message || "Google login failed");
+        setPopupOpen(true);
+        return;
+      }
+      
+
+    } catch (error) {
+      setPopupMessage("Google login failed");
+      setPopupOpen(true);
+      return;
+    }
+  }
+
+  const handleGoogleLoginError = () => {
+    setPopupMessage("Google login failed");
+    setPopupOpen(true);
+  };
 
   // function to handle both login and sign up form submissions
   const handleSubmit = async (e) => {
@@ -86,6 +127,15 @@ export default function Login() {
         </h1>
 
         <h1 className="text-3xl font-bold mb-4">{signInType}:</h1>
+
+        <GoogleLogin
+          onSuccess={(credentialResponse) => {
+            handleGoogleLoginSuccess(credentialResponse);
+          }}
+          onError={() => {
+            handleGoogleLoginError();
+          }}
+        />
 
         <Form className="w-full max-w-lg p-8 rounded-lg shadow-md">
           <Form.Item>

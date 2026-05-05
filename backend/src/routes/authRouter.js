@@ -3,6 +3,11 @@ import bcrypt from 'bcryptjs';
 import authMiddleware from '../middleware/authMiddleware.js';
 import {query} from '../postgresClient.js';
 
+
+const { OAuth2Client } = await import('google-auth-library');
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+
 const router =  express.Router();
 
 // Register route
@@ -70,6 +75,36 @@ router.get('/profile', authMiddleware, async (req, res) => {
     } catch (error) {
         return res.status(500).json({success: false, message: 'Failed to fetch user profile', error: error.message});
     }
+});
+
+router.post('/google', async (req, res) => {
+    const { credential } = req.body;
+
+    // verifies against Google and returns the user's info if the token is valid
+    const response = await client.verifyIdToken({
+        idToken: credential,
+        audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = response.getPayload();
+    const {email, name, sub:googleId} = payload;
+
+    try {
+        // see if this user exists, if not then create a new user with their googleId as an identifier
+        let user = await query(`SELECT * FROM users WHERE google_id = $1`, [googleId]);
+        if (!user.rows[0]) {
+            user = await query(`INSERT INTO users (username, google_id) VALUES ($1, $2) RETURNING id`, [name, googleId]);
+        }
+
+        req.session.userId = user.rows[0].id; // Store user ID in session
+
+        res.json({success: true, message: 'Google login successful'});
+    } catch (error) {
+        // if there's an error during this process, log it and send a failure response
+        console.error('Google login error:', error);
+        res.status(500).json({success: false, message: 'Google login failed', error: error.message});
+    }
+
 });
 
 export default router;
