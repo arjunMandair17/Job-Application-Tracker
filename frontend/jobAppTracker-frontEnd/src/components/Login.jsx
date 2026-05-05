@@ -4,6 +4,7 @@ import { Button } from "antd";
 import { useState } from "react";
 import { Modal } from "antd";
 import { useNavigate } from "react-router-dom";
+import { HomeOutlined } from "@ant-design/icons";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -38,17 +39,14 @@ export default function Login() {
 
     // send a request to the backedn to either log in or sign up the user
     let endpoint = signInType === "Login" ? "login" : "register";
-    const response = await fetch(
-      `http://localhost:3000/auth/${endpoint}`,
-      {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
+    const response = await fetch(`http://localhost:3000/auth/${endpoint}`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
       },
-    );
+      body: JSON.stringify({ username, password }),
+    });
     const result = await response.json();
 
     if (response.ok) {
@@ -62,6 +60,17 @@ export default function Login() {
   };
   return (
     <>
+      <Button
+        type="primary"
+        icon={<HomeOutlined />}
+        onClick={() => navigate("/")}
+        className="!fixed !top-6 !left-1/2 !-translate-x-1/2 !h-10 !px-4 !text-base !bg-blue-600 hover:!bg-blue-700 !border-0 !rounded-lg !shadow-md hover:!shadow-lg transition-all duration-200"
+      >
+        Home
+      </Button>
+      <br>
+      </br>
+
       <Modal
         title="Uh oh!"
         open={popupOpen}
@@ -72,12 +81,13 @@ export default function Login() {
       </Modal>
 
       <div className="min-h-screen flex flex-col items-center justify-start pt-10 px-4">
-        <h1 className="text-5xl tracking-[0.18em] uppercase !text-blue-500 drop-shadow-sm mb-4">Job-Vault</h1>
+        <h1 className="text-5xl tracking-[0.18em] uppercase !text-blue-500 drop-shadow-sm mb-4">
+          Job-Vault
+        </h1>
 
         <h1 className="text-3xl font-bold mb-4">{signInType}:</h1>
 
         <Form className="w-full max-w-lg p-8 rounded-lg shadow-md">
-          
           <Form.Item>
             <p className="text-lg text-blue-200 font-bold"> Username </p>
             <Input

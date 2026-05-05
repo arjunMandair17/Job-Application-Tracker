@@ -1,3 +1,7 @@
+// this file is deprecated, it was used for SQLite db integration during development.
+// the current version hosts a postgres database on Railway.
+// however I am keeping it here for reference as to how the database is structured.
+
 import { DatabaseSync } from "node:sqlite";
 const db = new DatabaseSync(":memory:");
 
@@ -12,7 +16,7 @@ db.exec(`
 
 // Job applications table
 db.exec(`
-    CREATE TABLE jobApplications (
+    CREATE TABLE jobapplications (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT,
         company TEXT,

@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from 'multer';
-import db from '../db.js';
+import {query} from '../postgresClient.js';
 
 
 // AWS S3 setup
@@ -61,11 +61,10 @@ const getResumeSignedUrl = async (key) => {
 // get all job applications for the logged in user
 router.get('/', async (req, res) => {
     try {
-        const getApps = db.prepare(`SELECT * FROM jobApplications WHERE user_id = ?`);
-        const apps = getApps.all(req.session.userId);
+        const apps = await query(`SELECT * FROM jobapplications WHERE user_id = $1`, [req.session.userId]);
 
         const appsWithUrls = await Promise.all(
-            apps.map(async (app) => ({
+            apps.rows.map(async (app) => ({
                 ...app,
                 resumeUrl: app.filename ? await getResumeSignedUrl(app.filename) : null
             }))
@@ -81,15 +80,14 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const getApp = db.prepare(`SELECT * FROM jobApplications WHERE id = ? AND user_id = ?`);
-        const app = getApp.get(id, req.session.userId);
+        const app = await query(`SELECT * FROM jobapplications WHERE id = $1 AND user_id = $2`, [id, req.session.userId]);
 
-        if (!app) {
+        if (!app.rows[0]) {
             return res.status(404).json({ message: 'Job application not found' });
         }
 
-        const resumeUrl = app.filename ? await getResumeSignedUrl(app.filename) : null;
-        res.json({ ...app, resumeUrl });
+        const resumeUrl = app.rows[0].filename ? await getResumeSignedUrl(app.rows[0].filename) : null;
+        res.json({ ...app.rows[0], resumeUrl });
     } catch (error) {
         res.status(500).json({ message: 'Failed to fetch job application', error: error.message });
     }
@@ -105,11 +103,9 @@ router.post('/', upload.single('resume'), async (req, res) => {
             return res.status(400).json({ message: 'Title and company are required' });
         }
 
-        const addApp = db.prepare(
-            `INSERT INTO jobApplications (company, title, description, filename, date_applied, status, application_link, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
-        );
+        const sqlInsertion = `INSERT INTO jobapplications (company, title, description, filename, date_applied, status, application_link, user_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`;
 
-        const result = addApp.run(
+        const result = await query(sqlInsertion, [
             company,
             title,
             (description || ''),
@@ -118,9 +114,12 @@ router.post('/', upload.single('resume'), async (req, res) => {
             (status || null),
             (application_link || ''),
             req.session.userId
-        );
+        ]);
 
-        const appId = result.lastInsertRowid;
+        const appId = result.rows?.[0]?.id;
+        if (!appId) {
+            return res.status(500).json({ message: 'Failed to create job application' });
+        }
         let resumeKey = '';
 
         if (resume) {
@@ -137,8 +136,7 @@ router.post('/', upload.single('resume'), async (req, res) => {
             const s3 = getS3Client();
             await s3.send(putCommand);
 
-            const setResume = db.prepare(`UPDATE jobApplications SET filename = ? WHERE id = ? AND user_id = ?`);
-            setResume.run(resumeKey, appId, req.session.userId);
+            const setResume = await query(`UPDATE jobapplications SET filename = $1 WHERE id = $2 AND user_id = $3`, [resumeKey, appId, req.session.userId]);
         }
 
         const resumeUrl = resumeKey ? await getResumeSignedUrl(resumeKey) : null;
@@ -155,8 +153,8 @@ router.put('/:id', upload.single('resume'), async (req, res) => {
         const { title, company, description, date_applied, status, application_link } = req.body;
         const resume = req.file;
 
-        const getExisting = db.prepare(`SELECT * FROM jobApplications WHERE id = ? AND user_id = ?`);
-        const existing = getExisting.get(id, req.session.userId);
+        const getExisting = await query(`SELECT * FROM jobapplications WHERE id = $1 AND user_id = $2`, [id, req.session.userId]);
+        const existing = getExisting.rows[0];
 
         if (!existing) {
             return res.status(404).json({ message: 'Job application not found' });
@@ -187,11 +185,9 @@ router.put('/:id', upload.single('resume'), async (req, res) => {
             }
         }
 
-        const updateApp = db.prepare(
-            `UPDATE jobApplications SET title = ?, company = ?, description = ?, filename = ?, date_applied = ?, status = ?, application_link = ? WHERE id = ? AND user_id = ?`
-        );
+        const updateAppSQL = `UPDATE jobapplications SET title = $1, company = $2, description = $3, filename = $4, date_applied = $5, status = $6, application_link = $7 WHERE id = $8 AND user_id = $9`;
 
-        updateApp.run(
+        await query(updateAppSQL, [
             title || existing.title,
             company || existing.company,
             description || existing.description,
@@ -201,7 +197,7 @@ router.put('/:id', upload.single('resume'), async (req, res) => {
             application_link || existing.application_link,
             id,
             req.session.userId
-        );
+        ]);
 
         const updatedResumeUrl = resumeKey ? await getResumeSignedUrl(resumeKey) : null;
         res.json({ message: 'Job application updated successfully', resumeUrl: updatedResumeUrl });
@@ -217,8 +213,8 @@ router.delete("/:id", async (req, res) => {
 
         // get the app first so we can find the S3 key for the resume
         const { id } = req.params;
-        const getApp = db.prepare(`SELECT * FROM jobApplications WHERE id = ? AND user_id = ?`);
-        const app = getApp.get(id, req.session.userId);
+        const getApp = await query(`SELECT * FROM jobapplications WHERE id = $1 AND user_id = $2`, [id, req.session.userId]);
+        const app = getApp.rows[0];
 
         if(!app) {
             return res.status(404).json({ message: 'Job application not found' });
@@ -237,10 +233,9 @@ router.delete("/:id", async (req, res) => {
         }
 
         // now that S3 is handled, delete the app from the database
-        const deleteApp = db.prepare(`DELETE FROM jobApplications WHERE id = ? AND user_id = ?`);
-        const result = deleteApp.run(id, req.session.userId);
+        const deleteApp = await query(`DELETE FROM jobapplications WHERE id = $1 AND user_id = $2`, [id, req.session.userId]);
 
-        if (result.changes === 0) {
+        if (deleteApp.rowCount === 0) {
             return res.status(404).json({ message: 'Job application not found' });
         }
 
