@@ -2,6 +2,8 @@ import { Input, Button, Form, Upload, message } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { useState } from "react";
 
+const backendURL = import.meta.env.VITE_BACKEND_URL;
+
 
     
 
@@ -29,7 +31,7 @@ const EditApp = ({ id, curInput }) => {
             formData.append("resume", resumeFile);
         }
 
-        const response = await fetch("http://localhost:3000/jobApps/" + id, {
+        const response = await fetch(backendURL + "/jobApps/" + id, {
             method: "PUT",
             credentials: "include",
             body: formData,

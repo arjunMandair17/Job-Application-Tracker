@@ -15,7 +15,9 @@ import Hero from "../components/Hero";
 import JobApps from "./JobApps";
 import NewApp from "./NewApp";
 import Profile from "./Profile";
+import Footer from "../components/Footer";
 const { Header, Sider, Content } = Layout;
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const Home = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -30,7 +32,7 @@ const Home = () => {
   useEffect(() => {
     const loadAuth = async () => {
       try {
-        const response = await fetch("http://localhost:3000/auth/profile", {
+        const response = await fetch(`${BACKEND_URL}/auth/profile`, {
           method: "GET",
           credentials: "include",
         });
@@ -55,7 +57,7 @@ const Home = () => {
 
   const handleLogout = async () => {
     try {
-      await fetch("http://localhost:3000/auth/logout", {
+      await fetch(`${BACKEND_URL}/auth/logout`, {
         method: "POST",
         credentials: "include",
       });
@@ -157,11 +159,12 @@ const Home = () => {
             </>
             )}
 
-            {activeMenuKey === "2" && (<Profile isAuth={isAuth} onViewApps={() => setActiveMenuKey("3")} />)}
+            {activeMenuKey === "2" && (<Profile isAuth={isAuth} includeFooter={false} onViewApps={() => setActiveMenuKey("3")} />)}
 
             {activeMenuKey === "4" && <NewApp isAuth={isAuth}/>}
 
           </Content>
+          <Footer />
         </Layout>
       </Layout>
     </>

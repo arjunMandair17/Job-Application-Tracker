@@ -7,6 +7,9 @@ import { useNavigate } from "react-router-dom";
 import { HomeOutlined } from "@ant-design/icons";
 import { GoogleLogin } from "@react-oauth/google";
 import { message } from "antd";
+import Footer from "./Footer";
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -23,8 +26,9 @@ export default function Login() {
 
   const handleGoogleLoginSuccess = async (credentialResponse) => {
     
+
     try {
-      const response = await fetch("http://localhost:3000/auth/google", {
+      const response = await fetch(BACKEND_URL + "/auth/google", {
         method: "POST",
         credentials: "include",
         headers: {
@@ -41,7 +45,7 @@ export default function Login() {
         navigate("/");
         return;
       } else {
-        setPopupMessage(result.message || "Google login failed");
+        setPopupMessage(result.message + " im in this block" || "Google login failed im in this block");
         setPopupOpen(true);
         return;
       }
@@ -80,7 +84,7 @@ export default function Login() {
 
     // send a request to the backedn to either log in or sign up the user
     let endpoint = signInType === "Login" ? "login" : "register";
-    const response = await fetch(`http://localhost:3000/auth/${endpoint}`, {
+    const response = await fetch(`${BACKEND_URL}/auth/${endpoint}`, {
       method: "POST",
       credentials: "include",
       headers: {
@@ -91,8 +95,8 @@ export default function Login() {
     const result = await response.json();
 
     if (response.ok) {
+      message.success(result.message || `${signInType} successful`);
       navigate("/");
-      // add a modal that says login successful
       return;
     }
 
@@ -183,6 +187,7 @@ export default function Login() {
           </Form.Item>
         </Form>
       </div>
+      <Footer />
     </>
   );
 }

@@ -11,11 +11,10 @@ dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
 const { Pool } = pg;
 
+// remove after testing
 if (!process.env.DATABASE_URL) {
     console.error('Missing DATABASE_URL environment variable. Set it to your Railway Postgres connection string.');
 }
-
-const useSsl = process.env.NODE_ENV === 'production' || process.env.PGSSLMODE === 'require';
 
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,

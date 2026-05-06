@@ -3,6 +3,7 @@ import { FrownOutlined } from "@ant-design/icons";
 import { UploadOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const NewApp = ({ isAuth }) => {
     const [title, setTitle] = useState("");
@@ -28,7 +29,7 @@ const NewApp = ({ isAuth }) => {
             formData.append("resume", resumeFile);
         }
 
-        const response = await fetch("http://localhost:3000/jobApps", {
+        const response = await fetch(`${BACKEND_URL}/jobApps`, {
             method: "POST",
             credentials: "include",
             body: formData,

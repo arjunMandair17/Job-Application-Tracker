@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import authMiddleware from '../middleware/authMiddleware.js';
 import {query} from '../postgresClient.js';
 
-
+// for authorization with google, need to verify the token sent from the frontend via the oAuth API
 const { OAuth2Client } = await import('google-auth-library');
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -33,13 +33,13 @@ router.post('/register', async (req,res) =>{
 // Login route
 router.post('/login', async (req,res) =>{
     const {username, password} = req.body;
-    const hashedPW = bcrypt.hashSync(password, 10);
 
     const user = await query(`SELECT * FROM users WHERE username = $1`, [username]);
     const validateUser = user.rows[0];
 
     if(!validateUser) return res.status(404).json({success: false, message: 'User not found'});
 
+    // validate the pasword against the found user's encrypted one
     const valid = bcrypt.compareSync(password, validateUser.password);
     if(valid){
         req.session.userId = validateUser.id; // Store user ID in session
@@ -98,6 +98,7 @@ router.post('/google', async (req, res) => {
 
         req.session.userId = user.rows[0].id; // Store user ID in session
 
+        console.log('Google login successful for user:', name);
         res.json({success: true, message: 'Google login successful'});
     } catch (error) {
         // if there's an error during this process, log it and send a failure response

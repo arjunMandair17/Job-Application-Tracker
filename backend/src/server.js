@@ -18,7 +18,7 @@ if (!process.env.EXPRESS_SESSION_SECRET) {
     throw new Error('EXPRESS_SESSION_SECRET is required for express-session');
 }
 
-const frontendOrigin = process.env.FRONTEND_ORIGIN || 'http://localhost:5173';
+const frontendOrigin = process.env.FRONTEND_ORIGIN;
 
 // middleware
 app.use(express.json());

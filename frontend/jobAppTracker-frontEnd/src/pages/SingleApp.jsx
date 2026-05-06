@@ -20,6 +20,7 @@ import {
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import EditApp from "../components/EditApp";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 export default function SingleApp() {
   const { id } = useParams();
@@ -49,7 +50,7 @@ export default function SingleApp() {
   useEffect(() => {
     const getApplication = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/jobApps/${id}`, {
+        const response = await fetch(`${BACKEND_URL}/jobApps/${id}`, {
           method: "GET",
           credentials: "include",
           headers: {
@@ -143,7 +144,7 @@ export default function SingleApp() {
               onOk={async () => {
                 try {
                   const response = await fetch(
-                    `http://localhost:3000/jobApps/${id}`,
+                    `${BACKEND_URL}/jobApps/${id}`,
                     {
                       method: "DELETE",
                       credentials: "include",

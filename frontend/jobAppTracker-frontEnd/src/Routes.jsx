@@ -10,9 +10,9 @@ const AppRoutes = () => {
             <RouterRoutes>
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Auth />} />
-                <Route path="/user/:id" element={<Profile />} />
+                <Route path="/user/:id" element={<Profile includeFooter={true} />} />
                 <Route path="/jobApps/:id" element={<SingleApp />} />
-                <Route path="*" element={<Navigate to="/login" replace />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
             </RouterRoutes>
         </BrowserRouter>
     );

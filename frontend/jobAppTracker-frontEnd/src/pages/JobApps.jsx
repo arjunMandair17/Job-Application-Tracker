@@ -5,6 +5,8 @@ import { useState, useEffect } from "react";
 import { FrownOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 const JobApps =  ({ isAuth }) => {
     const [filter, setFilter] = useState("all");
     const [searchTerm, setSearchTerm] = useState("");
@@ -19,7 +21,7 @@ const JobApps =  ({ isAuth }) => {
                 return;
             }
 
-            const response = await fetch("http://localhost:3000/jobApps", {
+            const response = await fetch(`${BACKEND_URL}/jobApps`, {
                 method: "GET",
                 credentials: "include",
             });
