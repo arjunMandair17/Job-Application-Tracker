@@ -12,20 +12,20 @@ const Hero = ({ onAddApplication, onViewApplications }) => {
   return (
     <>
       <div
-        className="bg-gradient-to-br from-slate-50 via-white to-blue-50 py-12 text-center"
+        className="bg-gradient-to-br from-slate-50 via-white to-blue-50 py-14 text-center"
         style={{
-          marginBottom: 18,
-          borderRadius: 20,
-          border: "1px solid rgba(148,163,184,0.25)",
-          boxShadow: "0 18px 45px rgba(15,23,42,0.08)",
+          marginBottom: 24,
+          borderRadius: 24,
+          border: "1px solid rgba(148,163,184,0.22)",
+          boxShadow: "0 20px 50px rgba(15,23,42,0.10)",
           backgroundImage:
-            "radial-gradient(circle at top, rgba(59,130,246,0.10), transparent 40%), linear-gradient(135deg, rgba(248,250,252,1) 0%, rgba(239,246,255,1) 100%)",
+            "radial-gradient(circle at top, rgba(59,130,246,0.13), transparent 46%), linear-gradient(135deg, rgba(248,250,252,1) 0%, rgba(239,246,255,1) 100%)",
         }}
       >
-        <h1 className="text-5xl font-black tracking-[0.18em] uppercase !text-slate-900 drop-shadow-sm">
+        <h1 className="text-5xl font-black tracking-[0.15em] uppercase !text-slate-900 drop-shadow-sm">
           Job-Vault
         </h1>
-        <h3 className="mt-3 text-sm font-semibold uppercase tracking-[0.35em] text-slate-500">
+        <h3 className="mt-4 text-sm font-semibold uppercase tracking-[0.3em] text-slate-500">
           Stay organized, stay ahead.
         </h3>
       </div>
@@ -35,10 +35,12 @@ const Hero = ({ onAddApplication, onViewApplications }) => {
         variant="borderless"
         style={{
           marginBottom: 32,
-          borderRadius: 16,
-          padding: "14px 8px",
+          borderRadius: 20,
+          border: "1px solid rgba(148,163,184,0.18)",
+          boxShadow: "0 14px 36px rgba(15,23,42,0.07)",
+          padding: "18px 10px",
           background:
-            "linear-gradient(135deg, rgba(22,119,255,0.07) 0%, rgba(135,208,104,0.08) 100%)",
+            "linear-gradient(145deg, rgba(22,119,255,0.08) 0%, rgba(135,208,104,0.09) 100%)",
         }}
       >
         <Space direction="vertical" size={28} style={{ width: "100%" }}>
@@ -51,14 +53,23 @@ const Hero = ({ onAddApplication, onViewApplications }) => {
               alignItems: "center",
             }}
           >
-            <Space wrap size={10} style={{ justifyContent: "center" }}>
-              <Tag color="blue" style={{ padding: "4px 10px", fontSize: 14 }}>
+            <Space wrap size={12} style={{ justifyContent: "center" }}>
+              <Tag
+                color="blue"
+                style={{ padding: "5px 12px", fontSize: 13, borderRadius: 999 }}
+              >
                 Focus
               </Tag>
-              <Tag color="green" style={{ padding: "4px 10px", fontSize: 14 }}>
+              <Tag
+                color="green"
+                style={{ padding: "5px 12px", fontSize: 13, borderRadius: 999 }}
+              >
                 Momentum
               </Tag>
-              <Tag color="gold" style={{ padding: "4px 10px", fontSize: 14 }}>
+              <Tag
+                color="gold"
+                style={{ padding: "5px 12px", fontSize: 13, borderRadius: 999 }}
+              >
                 Interviews
               </Tag>
             </Space>
@@ -67,22 +78,24 @@ const Hero = ({ onAddApplication, onViewApplications }) => {
               level={2}
               style={{
                 margin: 0,
-                fontSize: 42,
-                lineHeight: 1.15,
-                maxWidth: 920,
+                fontSize: 40,
+                lineHeight: 1.2,
+                letterSpacing: "-0.02em",
+                maxWidth: 880,
               }}
             >
               Keep your job hunt organized and forward facing.
             </Title>
 
-            <br></br>
+            <br />
 
             <Paragraph
               style={{
                 margin: 0,
-                maxWidth: 960,
-                fontSize: 18,
-                lineHeight: 1.8,
+                maxWidth: 900,
+                fontSize: 17,
+                lineHeight: 1.85,
+                color: "rgba(15,23,42,0.86)",
               }}
             >
               Job-Vault helps you capture every application in one
@@ -95,9 +108,10 @@ const Hero = ({ onAddApplication, onViewApplications }) => {
             <Paragraph
               style={{
                 margin: 0,
-                maxWidth: 940,
-                fontSize: 17,
+                maxWidth: 880,
+                fontSize: 16,
                 lineHeight: 1.8,
+                color: "rgba(15,23,42,0.78)",
               }}
             >
               Whether you are applying to internships, new grad roles, or
@@ -114,6 +128,7 @@ const Hero = ({ onAddApplication, onViewApplications }) => {
               icon={<ThunderboltOutlined />}
               message="Use this app to track applications, interview stages, deadlines, and next actions."
               style={{ width: "100%", maxWidth: 960 }}
+              banner={false}
               className="text-center"
             />
           </div>
@@ -121,13 +136,18 @@ const Hero = ({ onAddApplication, onViewApplications }) => {
           <Row gutter={[20, 20]}>
             <Col xs={24} md={8}>
               <Card
-                style={{ borderRadius: 12, minHeight: 148 }}
+                style={{
+                  borderRadius: 14,
+                  minHeight: 148,
+                  border: "1px solid rgba(148,163,184,0.18)",
+                  boxShadow: "0 8px 24px rgba(15,23,42,0.05)",
+                }}
                 bodyStyle={{ padding: 18 }}
               >
                 <Space size={12}>
-                  <CheckCircleOutlined style={{ fontSize: 18 }} />
+                  <CheckCircleOutlined style={{ fontSize: 18, color: "#1677ff" }} />
                   <Paragraph
-                    style={{ margin: 0, fontSize: 16, lineHeight: 1.7 }}
+                    style={{ margin: 0, fontSize: 15.5, lineHeight: 1.7 }}
                   >
                     Log new applications with role, company, and date applied.
                   </Paragraph>
@@ -136,13 +156,18 @@ const Hero = ({ onAddApplication, onViewApplications }) => {
             </Col>
             <Col xs={24} md={8}>
               <Card
-                style={{ borderRadius: 12, minHeight: 148 }}
+                style={{
+                  borderRadius: 14,
+                  minHeight: 148,
+                  border: "1px solid rgba(148,163,184,0.18)",
+                  boxShadow: "0 8px 24px rgba(15,23,42,0.05)",
+                }}
                 bodyStyle={{ padding: 18 }}
               >
                 <Space size={12}>
-                  <CheckCircleOutlined style={{ fontSize: 18 }} />
+                  <CheckCircleOutlined style={{ fontSize: 18, color: "#1677ff" }} />
                   <Paragraph
-                    style={{ margin: 0, fontSize: 16, lineHeight: 1.7 }}
+                    style={{ margin: 0, fontSize: 15.5, lineHeight: 1.7 }}
                   >
                     Update stages like Applied, Interviewing, Offer, or
                     Rejected.
@@ -152,13 +177,18 @@ const Hero = ({ onAddApplication, onViewApplications }) => {
             </Col>
             <Col xs={24} md={8}>
               <Card
-                style={{ borderRadius: 12, minHeight: 148 }}
+                style={{
+                  borderRadius: 14,
+                  minHeight: 148,
+                  border: "1px solid rgba(148,163,184,0.18)",
+                  boxShadow: "0 8px 24px rgba(15,23,42,0.05)",
+                }}
                 bodyStyle={{ padding: 18 }}
               >
                 <Space size={12}>
-                  <CheckCircleOutlined style={{ fontSize: 18 }} />
+                  <CheckCircleOutlined style={{ fontSize: 18, color: "#1677ff" }} />
                   <Paragraph
-                    style={{ margin: 0, fontSize: 16, lineHeight: 1.7 }}
+                    style={{ margin: 0, fontSize: 15.5, lineHeight: 1.7 }}
                   >
                     Keep notes and follow-up reminders so nothing slips through.
                   </Paragraph>
@@ -176,6 +206,11 @@ const Hero = ({ onAddApplication, onViewApplications }) => {
                 size="large"
                 icon={<PlusOutlined />}
                 onClick={onAddApplication}
+                style={{
+                  borderRadius: 10,
+                  minWidth: 176,
+                  boxShadow: "0 8px 20px rgba(22,119,255,0.28)",
+                }}
               >
                 Add Application
               </Button>
@@ -183,6 +218,7 @@ const Hero = ({ onAddApplication, onViewApplications }) => {
                 size="large"
                 icon={<FolderOpenOutlined />}
                 onClick={onViewApplications}
+                style={{ borderRadius: 10, minWidth: 176 }}
               >
                 View Applications
               </Button>
