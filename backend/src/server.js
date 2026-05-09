@@ -34,6 +34,8 @@ app.use(express.static(path.join(__dirname, '../frontend/public')));
 app.use((req, res, next) => {
     const requestOrigin = req.headers.origin;
 
+    console.log('Request origin:', requestOrigin, 'Expected:', frontendOrigin);
+
     if (requestOrigin === frontendOrigin) {
         res.setHeader('Access-Control-Allow-Origin', requestOrigin);
         res.setHeader('Access-Control-Allow-Credentials', 'true');
