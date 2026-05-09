@@ -2,7 +2,7 @@
   "name": "jobapptracker",
   "version": "1.0.0",
   "description": "A basic application to strengthen backend and react knowledge, using an express backend with a SQL db and React frontend",
-  "main": "server.js",
+  "main": "src/server.js",
   "scripts": {
     "dev": "node src/server.js",
     "start": "node src/server.js",
