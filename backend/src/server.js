@@ -27,11 +27,16 @@ if (!process.env.NODE_ENV) {
 }
 
 // Configure allowed origins for CORS
+const frontendOrigin = (process.env.FRONTEND_ORIGIN || '').trim();
 const allowedOrigins = [
     'http://localhost:5173',      // Development frontend
     'http://localhost:3000',      // Development backend
-    process.env.FRONTEND_ORIGIN,  // Production frontend (from env)
-].filter(Boolean); // Remove undefined values
+];
+
+// Add production frontend if set
+if (frontendOrigin) {
+    allowedOrigins.push(frontendOrigin);
+}
 
 console.log('✓ Server starting with NODE_ENV:', process.env.NODE_ENV);
 console.log('✓ Allowed CORS origins:', allowedOrigins);
@@ -42,34 +47,33 @@ app.use(express.static(path.join(__dirname, '../frontend/public')));
 
 // CORS middleware
 app.use((req, res, next) => {
-    const requestOrigin = req.headers.origin;
-    const isAllowed = requestOrigin && allowedOrigins.includes(requestOrigin);
+    const origin = req.headers.origin;
     
-    // ALWAYS log CORS requests (for debugging)
-    console.log('CORS Request:', {
-        method: req.method,
-        origin: requestOrigin,
-        allowed: isAllowed,
-        path: req.path
-    });
+    // For debugging - log all requests
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.path} - Origin: ${origin}`);
 
-    // Set CORS headers if origin is allowed
+    // Check if origin is allowed
+    const isAllowed = origin && allowedOrigins.includes(origin);
+    
     if (isAllowed) {
-        res.setHeader('Access-Control-Allow-Origin', requestOrigin);
+        res.setHeader('Access-Control-Allow-Origin', origin);
         res.setHeader('Access-Control-Allow-Credentials', 'true');
         res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
         res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
         res.setHeader('Access-Control-Max-Age', '86400');
+    } else if (origin) {
+        console.log(`⚠ CORS: Origin not allowed: ${origin}`);
+        console.log(`⚠ Allowed origins: ${allowedOrigins.join(', ')}`);
     }
 
-    // Always handle OPTIONS (preflight) requests - but only respond if allowed
+    // Handle preflight requests
     if (req.method === 'OPTIONS') {
         if (isAllowed) {
-            console.log('✓ OPTIONS preflight allowed');
             return res.sendStatus(204);
         } else {
-            console.log('✗ OPTIONS preflight REJECTED - origin not in allowed list');
-            return res.status(403).json({ error: 'CORS origin not allowed' });
+            // Still respond to OPTIONS even if origin not allowed
+            // Browsers need to see CORS headers or an error
+            return res.status(403).end();
         }
     }
 
