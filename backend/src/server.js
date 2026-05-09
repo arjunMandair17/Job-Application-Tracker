@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import authRouter from './routes/authRouter.js';
 import jobAppRouter from './routes/jobAppsRouter.js';
 import authMiddleware from './middleware/authMiddleware.js';
+import {rateLimit} from 'express-rate-limit';
 
 const app = express();
 
@@ -18,7 +19,14 @@ if (!process.env.EXPRESS_SESSION_SECRET) {
     throw new Error('EXPRESS_SESSION_SECRET is required for express-session');
 }
 
+if (!process.env.NODE_ENV) {
+    throw new Error('NODE_ENV environment variable is required');
+}
+
 const frontendOrigin = process.env.FRONTEND_ORIGIN;
+if (!frontendOrigin) {
+    throw new Error('FRONTEND_ORIGIN environment variable is required');
+}
 
 // middleware
 app.use(express.json());
@@ -39,6 +47,13 @@ app.use((req, res, next) => {
 
     next();
 });
+
+app.use(rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // limit each IP to 100 requests per windowMs
+    message: {success: false, message: 'Too many requests, please try again later.'}
+}))
+
 app.use(expressSession({
     secret: process.env.EXPRESS_SESSION_SECRET,
     resave: false,
@@ -51,6 +66,6 @@ app.use('/auth', authRouter);
 app.use('/jobApps', authMiddleware, jobAppRouter);
 
 
-app.listen(3000, () => {
-    console.log('Server is running on port 3000');
+app.listen(process.env.PORT || 3000, () => {
+    console.log('Server is running on port ' + (process.env.PORT || 3000));
 });

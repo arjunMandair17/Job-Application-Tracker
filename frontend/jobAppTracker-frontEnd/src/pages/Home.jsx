@@ -17,6 +17,7 @@ import NewApp from "./NewApp";
 import Profile from "./Profile";
 import Footer from "../components/Footer";
 import HomeTitle from "../components/HomeTitle";
+import HomeHighlights from "../components/HomeHighlights";
 
 const { Header, Sider, Content } = Layout;
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -165,7 +166,8 @@ const Home = () => {
                   justifyContent: "center",
                   gap: 0,
                   margin: "-14px -10px 0",
-                  padding: "clamp(28px, 4vw, 48px) clamp(12px, 3vw, 28px) clamp(20px, 3vw, 36px)",
+                  padding:
+                    "clamp(28px, 4vw, 48px) clamp(12px, 3vw, 28px) clamp(20px, 3vw, 36px)",
                   borderRadius: borderRadiusLG,
                   background: `radial-gradient(120% 80% at 50% -15%, ${colorPrimaryBg} 0%, transparent 52%),
                     linear-gradient(180deg, ${colorFillTertiary} 0%, transparent 42%)`,
@@ -187,6 +189,7 @@ const Home = () => {
                   onAddApplication={() => setActiveMenuKey("4")}
                   onViewApplications={() => setActiveMenuKey("3")}
                 />
+                <HomeHighlights />
               </section>
             )}
 
