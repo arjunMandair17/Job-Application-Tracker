@@ -26,35 +26,45 @@ if (!process.env.NODE_ENV) {
     throw new Error('NODE_ENV environment variable is required');
 }
 
-// Use FRONTEND_ORIGIN from env, or default for development
-const frontendOrigin = process.env.FRONTEND_ORIGIN || 'http://localhost:5173';
-console.log('Server starting with FRONTEND_ORIGIN:', frontendOrigin);
+// Configure allowed origins for CORS
+const allowedOrigins = [
+    'http://localhost:5173',      // Development frontend
+    'http://localhost:3000',      // Development backend
+    process.env.FRONTEND_ORIGIN,  // Production frontend (from env)
+].filter(Boolean); // Remove undefined values
+
+console.log('Server starting with allowed origins:', allowedOrigins);
 
 // middleware
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../frontend/public')));
+
+// CORS middleware
 app.use((req, res, next) => {
     const requestOrigin = req.headers.origin;
 
-    // Log for debugging
-    console.log('=== PREFLIGHT DEBUG ===');
-    console.log('Method:', req.method);
-    console.log('Origin:', requestOrigin);
-    console.log('Path:', req.path);
+    // Log for debugging (remove in production if verbose)
+    if (process.env.NODE_ENV !== 'production') {
+        console.log('=== CORS DEBUG ===');
+        console.log('Method:', req.method);
+        console.log('Origin:', requestOrigin);
+        console.log('Path:', req.path);
+    }
 
-    // For credentialed requests, the origin must be explicitly listed
-    // Allow any origin that sends a request (this is permissive for testing)
-    if (requestOrigin) {
+    // Check if origin is allowed
+    if (requestOrigin && allowedOrigins.includes(requestOrigin)) {
         res.setHeader('Access-Control-Allow-Origin', requestOrigin);
         res.setHeader('Access-Control-Allow-Credentials', 'true');
         res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
         res.setHeader('Access-Control-Max-Age', '86400');
     }
 
-    // Always handle OPTIONS (preflight)
+    // Always handle OPTIONS (preflight) requests
     if (req.method === 'OPTIONS') {
-        console.log('Responding to OPTIONS preflight');
+        if (process.env.NODE_ENV !== 'production') {
+            console.log('Responding to OPTIONS preflight');
+        }
         return res.sendStatus(204);
     }
 
@@ -71,7 +81,12 @@ app.use(expressSession({
     secret: process.env.EXPRESS_SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-    cookie: {sameSite: "lax", httpOnly: true, secure: process.env.NODE_ENV === "production"}
+    cookie: {
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",  // HTTPS required in production
+        maxAge: 24 * 60 * 60 * 1000  // 24 hours
+    }
 }));
 
 // main routers
