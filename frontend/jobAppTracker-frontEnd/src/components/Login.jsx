@@ -20,6 +20,11 @@ const { Title, Text, Paragraph } = Typography;
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
+/** Mirrors backend `/auth/register` validation in authRouter.js */
+const USERNAME_REGEX = /^[a-zA-Z0-9_]{1,20}$/;
+const PASSWORD_REGEX =
+  /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z\d@$!%*?&]{12,}$/;
+
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -77,14 +82,19 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (signInType === "Sign Up") {
-      const hasUppercase = /[A-Z]/.test(password);
-      const hasLowercase = /[a-z]/.test(password);
-      const hasNumber = /[0-9]/.test(password);
+    const trimmedUsername = username.trim();
 
-      if (!hasUppercase || !hasLowercase || !hasNumber) {
+    if (signInType === "Sign Up") {
+      if (!USERNAME_REGEX.test(trimmedUsername)) {
         setPopupMessage(
-          "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, and one number.",
+          "Username must be 1–20 characters and use only letters, numbers, and underscores.",
+        );
+        setPopupOpen(true);
+        return;
+      }
+      if (!PASSWORD_REGEX.test(password)) {
+        setPopupMessage(
+          "Password must be at least 12 characters and include uppercase, lowercase, and a number. Characters allowed: letters, digits, or @ $ ! % * ? &.",
         );
         setPopupOpen(true);
         return;
@@ -98,7 +108,10 @@ export default function Login() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({
+        username: trimmedUsername,
+        password,
+      }),
     });
     const result = await response.json();
 
@@ -205,7 +218,7 @@ export default function Login() {
               >
                 <SafetyOutlined style={{ fontSize: 18, color: colorPrimary }} />
                 <Text style={{ fontSize: 13, color: "rgba(15,23,42,0.75)" }}>
-                  Sign in securely. Sessions use HTTP-only cookies.
+                  Apply with confidence — your data is secure with us
                 </Text>
               </div>
 
@@ -246,10 +259,46 @@ export default function Login() {
                 or email & password
               </Divider>
 
+              {signInType === "Sign Up" && (
+                <div
+                  style={{
+                    padding: "12px 14px",
+                    borderRadius: 12,
+                    background: "rgba(248, 250, 252, 0.95)",
+                    border: `1px solid rgba(148,163,184,0.28)`,
+                  }}
+                >
+                  <Text strong style={{ fontSize: 13, display: "block", marginBottom: 8 }}>
+                    Account rules (signup)
+                  </Text>
+                  <Paragraph style={{ margin: 0, fontSize: 13, color: "rgba(15,23,42,0.78)" }}>
+                    <strong style={{ fontWeight: 600 }}>Username:</strong> 1–20 characters; letters,
+                    numbers, and underscores only (no spaces).
+                  </Paragraph>
+                  <Paragraph
+                    style={{
+                      margin: "8px 0 0",
+                      fontSize: 13,
+                      color: "rgba(15,23,42,0.78)",
+                    }}
+                  >
+                    <strong style={{ fontWeight: 600 }}>Password:</strong> at least 12 characters;
+                    include at least one uppercase letter, one lowercase letter, and one number.
+                  </Paragraph>
+                </div>
+              )}
+
+              {signInType === "Login" && (
+                <Text type="secondary" style={{ fontSize: 13, display: "block" }}>
+                  Log in with your username and password
+                </Text>
+              )}
+
               <Form layout="vertical" requiredMark={false} className="w-full">
                 <Form.Item label="Username" style={{ marginBottom: 14 }}>
                   <Input
                     size="large"
+                    maxLength={20}
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     placeholder="yourname"

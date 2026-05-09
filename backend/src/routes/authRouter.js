@@ -13,16 +13,25 @@ const router =  express.Router();
 // Register route
 router.post('/register', async (req,res) =>{
     try {
-        const {username, password} = req.body;
+        const {username: rawUsername, password} = req.body;
 
-        // Password must be 12+ chars with uppercase, lowercase, number, and optional special chars
         const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z\d@$!%*?&]{12,}$/;
-        const usernameRegex = /^[a-zA-Z0-9_]{1,20}$/; // 1-20 chars, letters, numbers, underscores only
+        const usernameRegex = /^[a-zA-Z0-9_]{1,20}$/;
+        const username = typeof rawUsername === 'string' ? rawUsername.trim() : '';
 
-        if(username === "" || password === "" || username.length > 20 || !passwordRegex.test(password) || !usernameRegex.test(username)){
-            return res.status(400).json({success: false, message: 'Password must be at least 12 characters with uppercase, lowercase, and number'});
+        if (!username || !usernameRegex.test(username)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Username must be 1–20 characters and use only letters, numbers, and underscores.',
+            });
         }
-        
+
+        if (password === undefined || password === '' || !passwordRegex.test(password)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Password must be at least 12 characters and include uppercase, lowercase, and a number. Characters allowed: letters, digits, or @ $ ! % * ? &.',
+            });
+        }
 
         // Hash the password
         const hashedPassword = bcrypt.hashSync(password, 10);
