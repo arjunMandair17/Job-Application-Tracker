@@ -23,10 +23,9 @@ if (!process.env.NODE_ENV) {
     throw new Error('NODE_ENV environment variable is required');
 }
 
-const frontendOrigin = process.env.FRONTEND_ORIGIN;
-if (!frontendOrigin) {
-    throw new Error('FRONTEND_ORIGIN environment variable is required');
-}
+// Use FRONTEND_ORIGIN from env, or default for development
+const frontendOrigin = process.env.FRONTEND_ORIGIN || 'http://localhost:5173';
+console.log('Server starting with FRONTEND_ORIGIN:', frontendOrigin);
 
 // middleware
 app.use(express.json());
