@@ -8,6 +8,11 @@ import jobAppRouter from './routes/jobAppsRouter.js';
 import authMiddleware from './middleware/authMiddleware.js';
 import {rateLimit} from 'express-rate-limit';
 
+// Log immediately on startup
+console.error('=== SERVER STARTING ===');
+console.error('NODE_ENV:', process.env.NODE_ENV);
+console.error('PORT:', process.env.PORT || 3000);
+
 const app = express();
 
 const __filename = fileURLToPath(import.meta.url);
@@ -15,16 +20,22 @@ const __dirname = dirname(__filename);
 
 // Only load .env in development (Railway uses environment variables directly)
 if (process.env.NODE_ENV !== 'production') {
+    console.error('Loading .env file...');
     dotenv.config({ path: path.join(__dirname, '..', '.env') });
 }
 
+console.error('Checking required environment variables...');
 if (!process.env.EXPRESS_SESSION_SECRET) {
-    throw new Error('EXPRESS_SESSION_SECRET is required for express-session');
+    console.error('❌ ERROR: EXPRESS_SESSION_SECRET is not set!');
+    process.exit(1);
 }
 
 if (!process.env.NODE_ENV) {
-    throw new Error('NODE_ENV environment variable is required');
+    console.error('❌ ERROR: NODE_ENV is not set!');
+    process.exit(1);
 }
+
+console.error('✓ Environment variables OK');
 
 // Configure allowed origins for CORS
 const frontendOrigin = (process.env.FRONTEND_ORIGIN || '').trim();
@@ -38,8 +49,9 @@ if (frontendOrigin) {
     allowedOrigins.push(frontendOrigin);
 }
 
-console.log('✓ Server starting with NODE_ENV:', process.env.NODE_ENV);
-console.log('✓ Allowed CORS origins:', allowedOrigins);
+console.error('✓ Server starting with NODE_ENV:', process.env.NODE_ENV);
+console.error('✓ FRONTEND_ORIGIN env:', process.env.FRONTEND_ORIGIN);
+console.error('✓ Allowed CORS origins:', allowedOrigins);
 
 // middleware
 app.use(express.json());
@@ -48,11 +60,9 @@ app.use(express.static(path.join(__dirname, '../frontend/public')));
 // CORS middleware
 app.use((req, res, next) => {
     const origin = req.headers.origin;
-
-    return res.status(200).json({success: true, message: `origin ${origin} was allowed`});
     
     // For debugging - log all requests
-    console.log(`[${new Date().toISOString()}] ${req.method} ${req.path} - Origin: ${origin}`);
+    console.error(`[${new Date().toISOString()}] ${req.method} ${req.path} - Origin: ${origin}`);
 
     // Check if origin is allowed
     const isAllowed = origin && allowedOrigins.includes(origin);
@@ -64,8 +74,8 @@ app.use((req, res, next) => {
         res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
         res.setHeader('Access-Control-Max-Age', '86400');
     } else if (origin) {
-        console.log(`⚠ CORS: Origin not allowed: ${origin}`);
-        console.log(`⚠ Allowed origins: ${allowedOrigins.join(', ')}`);
+        console.error(`⚠ CORS: Origin not allowed: ${origin}`);
+        console.error(`⚠ Allowed origins: ${allowedOrigins.join(', ')}`);
     }
 
     // Handle preflight requests
@@ -106,5 +116,5 @@ app.use('/jobApps', authMiddleware, jobAppRouter);
 
 
 app.listen(process.env.PORT || 3000, () => {
-    console.log('Server is running on port ' + (process.env.PORT || 3000));
+    console.error('✅ Server is running on port ' + (process.env.PORT || 3000));
 });
