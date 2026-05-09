@@ -61,32 +61,28 @@ app.use(express.static(path.join(__dirname, '../frontend/public')));
 app.use((req, res, next) => {
     const origin = req.headers.origin;
     
-    // For debugging - log all requests
+    // For debugging - log ALL requests with their origin
     console.error(`[${new Date().toISOString()}] ${req.method} ${req.path} - Origin: ${origin}`);
 
     // Check if origin is allowed
     const isAllowed = origin && allowedOrigins.includes(origin);
     
-    if (isAllowed) {
+    // TEMPORARILY: Allow all origins for debugging
+    if (origin) {
         res.setHeader('Access-Control-Allow-Origin', origin);
         res.setHeader('Access-Control-Allow-Credentials', 'true');
         res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
         res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
         res.setHeader('Access-Control-Max-Age', '86400');
-    } else if (origin) {
-        console.error(`⚠ CORS: Origin not allowed: ${origin}`);
-        console.error(`⚠ Allowed origins: ${allowedOrigins.join(', ')}`);
+        
+        if (!isAllowed) {
+            console.error(`⚠️ TEMPORARY: Allowing non-whitelisted origin: ${origin}`);
+        }
     }
 
     // Handle preflight requests
     if (req.method === 'OPTIONS') {
-        if (isAllowed) {
-            return res.sendStatus(204);
-        } else {
-            // Still respond to OPTIONS even if origin not allowed
-            // Browsers need to see CORS headers or an error
-            return res.status(403).end();
-        }
+        return res.sendStatus(204);
     }
 
     next();
