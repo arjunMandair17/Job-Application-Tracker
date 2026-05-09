@@ -36,15 +36,25 @@ app.use(express.static(path.join(__dirname, '../frontend/public')));
 app.use((req, res, next) => {
     const requestOrigin = req.headers.origin;
 
-    // Allow the request origin (for credentials to work, can't use *)
+    // Log for debugging
+    console.log('=== PREFLIGHT DEBUG ===');
+    console.log('Method:', req.method);
+    console.log('Origin:', requestOrigin);
+    console.log('Path:', req.path);
+
+    // For credentialed requests, the origin must be explicitly listed
+    // Allow any origin that sends a request (this is permissive for testing)
     if (requestOrigin) {
         res.setHeader('Access-Control-Allow-Origin', requestOrigin);
         res.setHeader('Access-Control-Allow-Credentials', 'true');
-        res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
         res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+        res.setHeader('Access-Control-Max-Age', '86400');
     }
 
+    // Always handle OPTIONS (preflight)
     if (req.method === 'OPTIONS') {
+        console.log('Responding to OPTIONS preflight');
         return res.sendStatus(204);
     }
 
