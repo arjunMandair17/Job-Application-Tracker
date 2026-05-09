@@ -48,6 +48,8 @@ app.use(express.static(path.join(__dirname, '../frontend/public')));
 // CORS middleware
 app.use((req, res, next) => {
     const origin = req.headers.origin;
+
+    return res.status(200).json({success: true, message: `origin ${origin} was allowed`});
     
     // For debugging - log all requests
     console.log(`[${new Date().toISOString()}] ${req.method} ${req.path} - Origin: ${origin}`);
