@@ -9,7 +9,7 @@ const Footer = () => {
                 Job-Vault &copy; 2026, developed by Arjun Mandair. All rights reserved.
             </p>
             <p>
-                Created using React, Tailwind CSS, and AntDesign.
+                Frontend using React, Tailwind CSS, and AntDesign.
             </p>
             <div className="flex space-x-4 mt-2">
                 <GithubOutlined className="text-2xl cursor-pointer" onClick={() => window.open("https://github.com/arjunMandair17", "_blank")} />
