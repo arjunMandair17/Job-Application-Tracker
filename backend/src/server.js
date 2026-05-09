@@ -13,7 +13,10 @@ const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-dotenv.config({ path: path.join(__dirname, '..', '.env') });
+// Only load .env in development (Railway uses environment variables directly)
+if (process.env.NODE_ENV !== 'production') {
+    dotenv.config({ path: path.join(__dirname, '..', '.env') });
+}
 
 if (!process.env.EXPRESS_SESSION_SECRET) {
     throw new Error('EXPRESS_SESSION_SECRET is required for express-session');
