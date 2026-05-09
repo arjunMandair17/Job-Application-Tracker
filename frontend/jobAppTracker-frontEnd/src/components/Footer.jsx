@@ -8,6 +8,9 @@ const Footer = () => {
             <p>
                 Job-Vault &copy; 2026, developed by Arjun Mandair. All rights reserved.
             </p>
+            <p>
+                Created using React, Tailwind CSS, and AntDesign.
+            </p>
             <div className="flex space-x-4 mt-2">
                 <GithubOutlined className="text-2xl cursor-pointer" onClick={() => window.open("https://github.com/arjunMandair17", "_blank")} />
                 <LinkedinFilled className="text-2xl cursor-pointer" onClick={() => window.open("https://www.linkedin.com/in/arjun-mandair-9b4a70378", "_blank")} />
