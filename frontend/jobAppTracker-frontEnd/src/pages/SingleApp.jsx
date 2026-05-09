@@ -174,7 +174,7 @@ export default function SingleApp() {
               type="dashed"
               icon={<EditOutlined />}
               onClick={() => setEditing((prev) => !prev)}
-              style={{ marginBottom: "20px" }}
+              style={{ marginBottom: "20px", marginRight: "12px" }}
             >
               {editing ? "Cancel Editing" : "Edit"}
             </Button>
@@ -184,6 +184,7 @@ export default function SingleApp() {
               icon={<DeleteOutlined />}
               danger
               onClick={() => setDeleteModalOpen(true)}
+              style={{ marginBottom: "20px" }}
             >
               Delete
             </Button>
