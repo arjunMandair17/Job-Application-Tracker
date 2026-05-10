@@ -91,7 +91,13 @@ const NewApp = ({ isAuth }) => {
                     <Input placeholder="ex: Applied, Interviewing, Offer Received" value={status} onChange={(e) => setStatus(e.target.value)} />
 
                     <h4>Notes</h4>
-                    <Input placeholder="Job description, or any relevant notes" value={description} onChange={(e) => setDescription(e.target.value)} />
+                    <Input.TextArea 
+                        placeholder="Job description, or any relevant notes" 
+                        value={description} 
+                        onChange={(e) => setDescription(e.target.value)}
+                        rows={6}
+                        style={{ resize: 'vertical' }}
+                    />
                     
                     <h4>Job Application Link</h4>
                     <Input placeholder="https://example.com/job-posting" value={applicationLink} onChange={(e) => setApplicationLink(e.target.value)} />
