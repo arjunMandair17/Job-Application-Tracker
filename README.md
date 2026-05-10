@@ -113,7 +113,7 @@ Contributions are welcome! Feel free to fork this repository and submit a pull r
 
 ## Connect With Me
 
-If you have any suggestions or thoughts about Job-Vault, please let me know:
+If you have any thoughts about Job-Vault or just want to connect, don't hesitate:
 
 - **LinkedIn:** [Arjun Mandair](https://www.linkedin.com/in/arjun-mandair-9b4a70378)
 - **GitHub:** [arjunMandair17](https://github.com/arjunMandair17)
