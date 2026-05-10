@@ -16,13 +16,13 @@ router.post('/register', async (req,res) =>{
         const {username: rawUsername, password} = req.body;
 
         const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z\d@$!%*?&]{12,}$/;
-        const usernameRegex = /^[a-zA-Z0-9_]{1,20}$/;
+        const usernameRegex = /^[a-zA-Z0-9._@-]{1,254}$/;
         const username = typeof rawUsername === 'string' ? rawUsername.trim() : '';
 
         if (!username || !usernameRegex.test(username)) {
             return res.status(400).json({
                 success: false,
-                message: 'Username must be 1–20 characters and use only letters, numbers, and underscores.',
+                message: 'Username can be 1–254 characters. Allowed characters: letters, numbers, dots, hyphens, underscores, and @ symbol (supports email addresses).',
             });
         }
 
@@ -118,7 +118,7 @@ router.post('/google', async (req, res) => {
         // see if this user exists, if not then create a new user with their googleId as an identifier
         let user = await query(`SELECT * FROM users WHERE google_id = $1`, [googleId]);
         if (!user.rows[0]) {
-            user = await query(`INSERT INTO users (username, google_id) VALUES ($1, $2) RETURNING id`, [name, googleId]);
+            user = await query(`INSERT INTO users (username, google_id) VALUES ($1, $2) RETURNING id`, [email, googleId]);
         }
 
         req.session.userId = user.rows[0].id; // Store user ID in session

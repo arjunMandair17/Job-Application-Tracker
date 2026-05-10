@@ -21,7 +21,7 @@ const { Title, Text, Paragraph } = Typography;
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 /** Mirrors backend `/auth/register` validation in authRouter.js */
-const USERNAME_REGEX = /^[a-zA-Z0-9_]{1,20}$/;
+const USERNAME_REGEX = /^[a-zA-Z0-9._@-]{1,254}$/;
 const PASSWORD_REGEX =
   /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z\d@$!%*?&]{12,}$/;
 
@@ -87,7 +87,7 @@ export default function Login() {
     if (signInType === "Sign Up") {
       if (!USERNAME_REGEX.test(trimmedUsername)) {
         setPopupMessage(
-          "Username must be 1–20 characters and use only letters, numbers, and underscores.",
+          "Username can be 1–254 characters. Allowed characters: letters, numbers, dots, hyphens, underscores, and @ symbol (supports email addresses).",
         );
         setPopupOpen(true);
         return;
@@ -272,8 +272,8 @@ export default function Login() {
                     Account rules (signup)
                   </Text>
                   <Paragraph style={{ margin: 0, fontSize: 13, color: "rgba(15,23,42,0.78)" }}>
-                    <strong style={{ fontWeight: 600 }}>Username:</strong> 1–20 characters; letters,
-                    numbers, and underscores only (no spaces).
+                    <strong style={{ fontWeight: 600 }}>Username:</strong> 1–254 characters; letters,
+                    numbers, dots, hyphens, underscores, and @ symbol. Use your email as your username if you prefer.
                   </Paragraph>
                   <Paragraph
                     style={{
@@ -298,10 +298,10 @@ export default function Login() {
                 <Form.Item label="Username" style={{ marginBottom: 14 }}>
                   <Input
                     size="large"
-                    maxLength={20}
+                    maxLength={254}
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    placeholder="yourname"
+                    placeholder="yourname or your@email.com"
                     autoComplete="username"
                   />
                 </Form.Item>
