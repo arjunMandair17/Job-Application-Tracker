@@ -8,11 +8,6 @@ import jobAppRouter from './routes/jobAppsRouter.js';
 import authMiddleware from './middleware/authMiddleware.js';
 import {rateLimit} from 'express-rate-limit';
 
-// Log immediately on startup
-console.error('=== SERVER STARTING ===');
-console.error('NODE_ENV:', process.env.NODE_ENV);
-console.error('PORT:', process.env.PORT || 3000);
-
 const app = express();
 
 const __filename = fileURLToPath(import.meta.url);
@@ -20,68 +15,45 @@ const __dirname = dirname(__filename);
 
 // Only load .env in development (Railway uses environment variables directly)
 if (process.env.NODE_ENV !== 'production') {
-    console.error('Loading .env file...');
     dotenv.config({ path: path.join(__dirname, '..', '.env') });
 }
 
-console.error('Checking required environment variables...');
 if (!process.env.EXPRESS_SESSION_SECRET) {
-    console.error('❌ ERROR: EXPRESS_SESSION_SECRET is not set!');
-    process.exit(1);
+    throw new Error('EXPRESS_SESSION_SECRET is required for express-session');
 }
 
 if (!process.env.NODE_ENV) {
-    console.error('❌ ERROR: NODE_ENV is not set!');
-    process.exit(1);
+    throw new Error('NODE_ENV environment variable is required');
 }
 
-console.error('✓ Environment variables OK');
-
-// Configure allowed origins for CORS
-const frontendOrigin = (process.env.FRONTEND_ORIGIN || '').trim();
-const allowedOrigins = [
-    'http://localhost:5173',      // Development frontend
-    'http://localhost:3000',      // Development backend
-];
-
-// Add production frontend if set
-if (frontendOrigin) {
-    allowedOrigins.push(frontendOrigin);
-}
-
-console.error('✓ Server starting with NODE_ENV:', process.env.NODE_ENV);
-console.error('✓ FRONTEND_ORIGIN env:', process.env.FRONTEND_ORIGIN);
-console.error('✓ Allowed CORS origins:', allowedOrigins);
+// Use FRONTEND_ORIGIN from env, or default for development
+const frontendOrigin = process.env.FRONTEND_ORIGIN;
 
 // middleware
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../frontend/public')));
-
-// CORS middleware
 app.use((req, res, next) => {
-    const origin = req.headers.origin;
-    
-    // For debugging - log ALL requests with their origin
-    console.error(`[${new Date().toISOString()}] ${req.method} ${req.path} - Origin: ${origin}`);
+    const requestOrigin = req.headers.origin;
 
-    // Check if origin is allowed
-    const isAllowed = origin && allowedOrigins.includes(origin);
-    
-    // TEMPORARILY: Allow all origins for debugging
-    if (origin) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
+    // Log for debugging
+    console.log('=== PREFLIGHT DEBUG ===');
+    console.log('Method:', req.method);
+    console.log('Origin:', requestOrigin);
+    console.log('Path:', req.path);
+
+    // For credentialed requests, the origin must be explicitly listed
+    // Allow any origin that sends a request (this is permissive for testing)
+    if (requestOrigin) {
+        res.setHeader('Access-Control-Allow-Origin', requestOrigin);
         res.setHeader('Access-Control-Allow-Credentials', 'true');
         res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
         res.setHeader('Access-Control-Max-Age', '86400');
-        
-        if (!isAllowed) {
-            console.error(`⚠️ TEMPORARY: Allowing non-whitelisted origin: ${origin}`);
-        }
     }
 
-    // Handle preflight requests
+    // Always handle OPTIONS (preflight)
     if (req.method === 'OPTIONS') {
+        console.log('Responding to OPTIONS preflight');
         return res.sendStatus(204);
     }
 
@@ -98,12 +70,7 @@ app.use(expressSession({
     secret: process.env.EXPRESS_SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-    cookie: {
-        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",  // HTTPS required in production
-        maxAge: 24 * 60 * 60 * 1000  // 24 hours
-    }
+    cookie: {sameSite: "lax", httpOnly: true, secure: process.env.NODE_ENV === "production"}
 }));
 
 // main routers
@@ -112,5 +79,5 @@ app.use('/jobApps', authMiddleware, jobAppRouter);
 
 
 app.listen(process.env.PORT || 3000, () => {
-    console.error('✅ Server is running on port ' + (process.env.PORT || 3000));
+    console.log('Server is running on port ' + (process.env.PORT || 3000));
 });
