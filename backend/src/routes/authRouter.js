@@ -41,7 +41,14 @@ router.post('/register', async (req,res) =>{
 
         req.session.userId = userId; // Store user ID in session
 
-        res.status(201).json({success: true ,message: 'User registered successfully'});
+        // Explicitly save session to ensure cookie is sent
+        req.session.save((err) => {
+            if (err) {
+                console.error('Session save error:', err);
+                return res.status(500).json({success: false, message: 'Session save failed'});
+            }
+            res.status(201).json({success: true, message: 'User registered successfully'});
+        });
     } catch (err) {
         console.error('Register error:', err);
         res.status(500).json({success: false, message: 'Registration failed', error: err.message});
@@ -64,7 +71,15 @@ router.post('/login', async (req,res) =>{
         const valid = bcrypt.compareSync(password, validateUser.password);
         if(valid){
             req.session.userId = validateUser.id; // Store user ID in session
-            res.json({success: true, message: 'Login successful'});
+            
+            // Explicitly save session to ensure cookie is sent
+            req.session.save((err) => {
+                if (err) {
+                    console.error('Session save error:', err);
+                    return res.status(500).json({success: false, message: 'Session save failed'});
+                }
+                res.json({success: true, message: 'Login successful'});
+            });
         }else{
             res.status(401).json({success: false, message: 'Incorrect username or password'});
         }
@@ -122,7 +137,15 @@ router.post('/google', async (req, res) => {
         }
 
         req.session.userId = user.rows[0].id; // Store user ID in session
-        res.json({success: true, message: 'Google login successful'});
+        
+        // Explicitly save session to ensure cookie is sent
+        req.session.save((err) => {
+            if (err) {
+                console.error('Session save error:', err);
+                return res.status(500).json({success: false, message: 'Session save failed'});
+            }
+            res.json({success: true, message: 'Google login successful'});
+        });
     } catch (error) {
         console.error('Google login error:', error);
         return res.status(400).json({success: false, message: 'Google login failed'});
