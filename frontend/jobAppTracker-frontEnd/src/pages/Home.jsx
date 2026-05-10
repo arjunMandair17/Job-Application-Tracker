@@ -40,6 +40,11 @@ const Home = () => {
   } = theme.useToken();
 
   useEffect(() => {
+    const isMobile = window.innerWidth < 768;
+    setCollapsed(isMobile);
+  }, []);
+
+  useEffect(() => {
     const loadAuth = async () => {
       try {
         const response = await fetch(`${BACKEND_URL}/auth/profile`, {
@@ -127,21 +132,21 @@ const Home = () => {
               icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
               onClick={() => setCollapsed(!collapsed)}
               style={{
-                fontSize: "16px",
-                width: 64,
-                height: 64,
+                fontSize: window.innerWidth < 768 ? "14px" : "16px",
+                width: window.innerWidth < 768 ? 48 : 64,
+                height: window.innerWidth < 768 ? 48 : 64,
                 marginLeft: 0,
               }}
             />
 
-            <p className="flex-1 text-md font-semibold !text-center">
-              Welcome to Job-Vault, {username}!
+            <p className={`flex-1 font-semibold !text-center ${window.innerWidth < 768 ? "text-sm" : "text-md"}`}>
+              Welcome to {window.innerWidth < 640 ? "Job-Vault" : `Job-Vault, ${username}`}!
             </p>
 
             <Button
               type="primary"
               icon={isAuth ? <LogoutOutlined /> : <LoginOutlined />}
-              style={{ marginLeft: "auto", marginRight: 24, marginBottom: 0 }}
+              style={{ marginLeft: "auto", marginRight: window.innerWidth < 768 ? 12 : 24, marginBottom: 0, fontSize: window.innerWidth < 768 ? "13px" : "14px" }}
               onClick={isAuth ? handleLogout : () => navigate("/login")}
             >
               {isAuth ? "Log Out" : "Log In"}

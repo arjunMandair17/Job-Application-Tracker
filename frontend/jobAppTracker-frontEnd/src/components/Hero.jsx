@@ -58,7 +58,7 @@ const Hero = ({ onAddApplication, onViewApplications }) => {
               level={2}
               style={{
                 margin: 0,
-                fontSize: 40,
+                fontSize: window.innerWidth < 768 ? 28 : 40,
                 lineHeight: 1.2,
                 letterSpacing: "-0.02em",
                 maxWidth: 880,
@@ -73,7 +73,7 @@ const Hero = ({ onAddApplication, onViewApplications }) => {
               style={{
                 margin: 0,
                 maxWidth: 900,
-                fontSize: 17,
+                fontSize: window.innerWidth < 768 ? 15 : 17,
                 lineHeight: 1.85,
                 color: "rgba(15,23,42,0.86)",
               }}
@@ -89,7 +89,7 @@ const Hero = ({ onAddApplication, onViewApplications }) => {
               style={{
                 margin: 0,
                 maxWidth: 880,
-                fontSize: 16,
+                fontSize: window.innerWidth < 768 ? 14 : 16,
                 lineHeight: 1.8,
                 color: "rgba(15,23,42,0.78)",
               }}

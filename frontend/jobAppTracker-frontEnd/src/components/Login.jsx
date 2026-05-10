@@ -143,15 +143,16 @@ export default function Login() {
           onClick={() => navigate("/")}
           style={{
             position: "fixed",
-            top: 20,
-            left: 20,
+            top: window.innerWidth < 640 ? 10 : 20,
+            left: window.innerWidth < 640 ? 10 : 20,
             zIndex: 20,
-            height: 40,
+            height: window.innerWidth < 640 ? 36 : 40,
             borderRadius: 10,
+            fontSize: window.innerWidth < 640 ? 14 : 16,
             boxShadow: `0 8px 20px color-mix(in srgb, ${colorPrimary} 35%, transparent)`,
           }}
         >
-          Home
+          {window.innerWidth < 640 ? "" : "Home"}
         </Button>
 
         <Modal
@@ -176,7 +177,7 @@ export default function Login() {
             variant="borderless"
             style={{
               width: "100%",
-              maxWidth: 460,
+              maxWidth: window.innerWidth < 640 ? "95%" : 460,
               background: colorBgContainer,
               borderRadius: 22,
               border: `1px solid ${colorBorderSecondary}`,

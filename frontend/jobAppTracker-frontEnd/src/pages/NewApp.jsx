@@ -69,7 +69,9 @@ const NewApp = ({ isAuth }) => {
             </h1>
 
             <Form
-                className="!max-w-2xl !mx-auto !p-6 !bg-white !rounded-lg !shadow-md !flex !flex-col !gap-4"
+                layout={window.innerWidth < 768 ? "vertical" : "vertical"}
+                className="!mx-auto !bg-white !rounded-lg !shadow-md !flex !flex-col !gap-4"
+                style={{ maxWidth: window.innerWidth < 768 ? "95%" : "640px", padding: window.innerWidth < 768 ? "16px" : "24px" }}
                 onFinish={handleSubmit}
             >
 

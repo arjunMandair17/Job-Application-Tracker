@@ -100,7 +100,7 @@ export default function SingleApp() {
     <div
       style={{
         minHeight: "100vh",
-        padding: "40px 20px",
+        padding: window.innerWidth < 768 ? "24px 12px" : "40px 20px",
         background: "#f5f5f5",
       }}
     >
