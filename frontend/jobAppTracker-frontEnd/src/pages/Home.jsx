@@ -47,14 +47,24 @@ const Home = () => {
   useEffect(() => {
     const loadAuth = async () => {
       try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setIsAuth(false);
+          setUsername("Guest");
+          return;
+        }
+
         const response = await fetch(`${BACKEND_URL}/auth/profile`, {
           method: "GET",
-          credentials: "include",
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         });
 
         if (!response.ok) {
           setIsAuth(false);
           setUsername("Guest");
+          localStorage.removeItem('token');
           return;
         }
 
@@ -64,6 +74,7 @@ const Home = () => {
       } catch {
         setIsAuth(false);
         setUsername("Guest");
+        localStorage.removeItem('token');
       }
     };
 
@@ -72,11 +83,16 @@ const Home = () => {
 
   const handleLogout = async () => {
     try {
+      const token = localStorage.getItem('token');
       await fetch(`${BACKEND_URL}/auth/logout`, {
         method: "POST",
-        credentials: "include",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
     } finally {
+      // Clear token from localStorage
+      localStorage.removeItem('token');
       setIsAuth(false);
       setUsername("Guest");
       navigate("/login");

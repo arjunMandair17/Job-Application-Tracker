@@ -30,9 +30,12 @@ const NewApp = ({ isAuth }) => {
             formData.append("resume", resumeFile);
         }
 
+        const token = localStorage.getItem('token');
         const response = await fetch(`${BACKEND_URL}/jobApps`, {
             method: "POST",
-            credentials: "include",
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
             body: formData,
         });
 

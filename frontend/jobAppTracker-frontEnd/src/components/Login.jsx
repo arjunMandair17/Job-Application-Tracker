@@ -52,7 +52,6 @@ export default function Login() {
     try {
       const response = await fetch(BACKEND_URL + "/auth/google", {
         method: "POST",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -63,6 +62,10 @@ export default function Login() {
 
       if (result && result.success) {
         message.success(result.message || "Google login successful");
+        // Store JWT token in localStorage
+        if (result.token) {
+          localStorage.setItem('token', result.token);
+        }
         navigate("/");
         return;
       }
@@ -104,7 +107,6 @@ export default function Login() {
     const endpoint = signInType === "Login" ? "login" : "register";
     const response = await fetch(`${BACKEND_URL}/auth/${endpoint}`, {
       method: "POST",
-      credentials: "include",
       headers: {
         "Content-Type": "application/json",
       },
@@ -117,6 +119,10 @@ export default function Login() {
 
     if (response.ok) {
       message.success(result.message || `${signInType} successful`);
+      // Store JWT token in localStorage
+      if (result.token) {
+        localStorage.setItem('token', result.token);
+      }
       navigate("/");
       return;
     }

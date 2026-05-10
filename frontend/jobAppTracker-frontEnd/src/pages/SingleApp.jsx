@@ -50,10 +50,11 @@ export default function SingleApp() {
   useEffect(() => {
     const getApplication = async () => {
       try {
+        const token = localStorage.getItem('token');
         const response = await fetch(`${BACKEND_URL}/jobApps/${id}`, {
           method: "GET",
-          credentials: "include",
           headers: {
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         });
@@ -143,11 +144,14 @@ export default function SingleApp() {
               onCancel={() => setDeleteModalOpen(false)}
               onOk={async () => {
                 try {
+                  const token = localStorage.getItem('token');
                   const response = await fetch(
                     `${BACKEND_URL}/jobApps/${id}`,
                     {
                       method: "DELETE",
-                      credentials: "include",
+                      headers: {
+                        Authorization: `Bearer ${token}`
+                      }
                     },
                   );
                   if (!response.ok) {

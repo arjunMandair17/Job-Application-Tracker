@@ -1,5 +1,4 @@
 import express from 'express';
-import expressSession from 'express-session';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
@@ -21,9 +20,6 @@ if (process.env.NODE_ENV !== 'production') {
     dotenv.config({ path: path.join(__dirname, '..', '.env') });
 }
 
-if (!process.env.EXPRESS_SESSION_SECRET) {
-    throw new Error('EXPRESS_SESSION_SECRET is required for express-session');
-}
 
 if (!process.env.NODE_ENV) {
     throw new Error('NODE_ENV environment variable is required');
@@ -38,25 +34,13 @@ app.use(express.static(path.join(__dirname, '../frontend/public')));
 app.use((req, res, next) => {
     const requestOrigin = req.headers.origin;
 
-    // Log for debugging
-    console.log('=== PREFLIGHT DEBUG ===');
-    console.log('Method:', req.method);
-    console.log('Origin:', requestOrigin);
-    console.log('Path:', req.path);
-
-    // For credentialed requests, the origin must be explicitly listed
-    // Allow any origin that sends a request (this is permissive for testing)
     if (requestOrigin) {
         res.setHeader('Access-Control-Allow-Origin', requestOrigin);
-        res.setHeader('Access-Control-Allow-Credentials', 'true');
         res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, Cookie');
-        res.setHeader('Access-Control-Max-Age', '86400');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     }
 
-    // Always handle OPTIONS (preflight)
     if (req.method === 'OPTIONS') {
-        console.log('Responding to OPTIONS preflight');
         return res.sendStatus(204);
     }
 
@@ -69,18 +53,6 @@ app.use(rateLimit({
     message: {success: false, message: 'Too many requests, please try again later.'},
     skip: (req) => req.method === 'OPTIONS'  // Don't rate limit OPTIONS requests
 }))
-
-app.use(expressSession({
-    secret: process.env.EXPRESS_SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        sameSite: "none",
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production" || process.env.FORCE_SECURE === "true",  // Force true for local HTTPS testing
-        maxAge: 24 * 60 * 60 * 1000  // 24 hours
-    }
-}));
 
 // main routers
 app.use('/auth', authRouter);

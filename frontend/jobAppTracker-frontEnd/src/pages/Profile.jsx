@@ -19,16 +19,21 @@ export default function Profile({ isAuth = false, includeFooter = true, onViewAp
     const loadProfile = async () => {
       setLoading(true);
       try {
+        const token = localStorage.getItem('token');
         const profileResp = await fetch(`${BACKEND_URL}/auth/profile`, {
           method: "GET",
-          credentials: "include",
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         });
         if (!profileResp.ok) throw new Error("Failed to load profile");
         const profile = await profileResp.json();
 
         const appsResp = await fetch(`${BACKEND_URL}/jobApps`, {
           method: "GET",
-          credentials: "include",
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         });
         if (!appsResp.ok) throw new Error("Failed to load applications");
         const appsJson = await appsResp.json();

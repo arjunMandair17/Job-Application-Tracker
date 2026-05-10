@@ -22,9 +22,12 @@ const JobApps =  ({ isAuth }) => {
                 return;
             }
 
+            const token = localStorage.getItem('token');
             const response = await fetch(`${BACKEND_URL}/jobApps`, {
                 method: "GET",
-                credentials: "include",
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
             });
 
             if (!response.ok) {
