@@ -39,12 +39,7 @@ Job-Vault is my answer to the very relatable struggle that comes from searching 
 **Backend:** Railway  
 **Database:** Railway PostgreSQL
 
-Currently live and accessible at: [Add your live URL here]
-
-### Deployment Setup
-- Frontend automatically deploys on push to main via Vercel GitHub integration
-- Backend deploys on push to main via Railway GitHub integration
-- Environment variables configured in Railway and Vercel dashboards
+Currently live and accessible at: [Job-Vault](https://job-application-tracker-eta-livid.vercel.app/)
 
 ## Getting Started
 
