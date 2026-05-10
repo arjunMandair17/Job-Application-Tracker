@@ -41,11 +41,11 @@ export default function SingleApp() {
   };
 
   useEffect(() => {
-    document.body.style.overflow = editing ? "hidden" : "auto";
+    // Cleanup if component unmounts
     return () => {
       document.body.style.overflow = "auto";
     };
-  }, [editing]);
+  }, []);
 
   useEffect(() => {
     const getApplication = async () => {
