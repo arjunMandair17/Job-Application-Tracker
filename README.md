@@ -39,12 +39,7 @@ Job-Vault is my answer to the very relatable struggle that comes from searching 
 **Backend:** Railway  
 **Database:** Railway PostgreSQL
 
-Currently live and accessible at: [Add your live URL here]
-
-### Deployment Setup
-- Frontend automatically deploys on push to main via Vercel GitHub integration
-- Backend deploys on push to main via Railway GitHub integration
-- Environment variables configured in Railway and Vercel dashboards
+Currently live and accessible at: [Job-Vault](https://job-vault.app)
 
 ## Getting Started
 
@@ -118,7 +113,7 @@ Contributions are welcome! Feel free to fork this repository and submit a pull r
 
 ## Connect With Me
 
-If you have any suggestions or thoughts about Job-Vault, please let me know:
+If you have any thoughts about Job-Vault or just want to connect, don't hesitate:
 
 - **LinkedIn:** [Arjun Mandair](https://www.linkedin.com/in/arjun-mandair-9b4a70378)
 - **GitHub:** [arjunMandair17](https://github.com/arjunMandair17)
