@@ -28,7 +28,7 @@ Job-Vault is my answer to the very relatable struggle that comes from searching 
 
 - Node.js
 - Express
-- Express-session
+- JWT
 - Express-rate-limit
 - PostgreSQL relational data
 - AWS / Amazon Web Services S3 (Resume Storage)
