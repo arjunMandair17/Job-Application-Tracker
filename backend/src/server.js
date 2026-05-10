@@ -50,7 +50,7 @@ app.use((req, res, next) => {
         res.setHeader('Access-Control-Allow-Origin', requestOrigin);
         res.setHeader('Access-Control-Allow-Credentials', 'true');
         res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, Cookie');
         res.setHeader('Access-Control-Max-Age', '86400');
     }
 
@@ -74,7 +74,12 @@ app.use(expressSession({
     secret: process.env.EXPRESS_SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-    cookie: {sameSite: "lax", httpOnly: true, secure: process.env.NODE_ENV === "production"}
+    cookie: {
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 24 * 60 * 60 * 1000  // 24 hours
+    }
 }));
 
 // main routers
