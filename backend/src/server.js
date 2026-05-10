@@ -13,6 +13,9 @@ const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+// Trust proxy - important for Railway and other services behind load balancers
+app.set('trust proxy', 1);
+
 // Only load .env in development (Railway uses environment variables directly)
 if (process.env.NODE_ENV !== 'production') {
     dotenv.config({ path: path.join(__dirname, '..', '.env') });
@@ -63,7 +66,8 @@ app.use((req, res, next) => {
 app.use(rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 100, // limit each IP to 100 requests per windowMs
-    message: {success: false, message: 'Too many requests, please try again later.'}
+    message: {success: false, message: 'Too many requests, please try again later.'},
+    skip: (req) => req.method === 'OPTIONS'  // Don't rate limit OPTIONS requests
 }))
 
 app.use(expressSession({

@@ -17,9 +17,7 @@ const { Pool } = pg;
 
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
-    ssl: process.env.NODE_ENV === 'production' 
-        ? { rejectUnauthorized: true } 
-        : { rejectUnauthorized: false }
+    ssl: { rejectUnauthorized: false }  // Railway uses self-signed certs
 });
 
 // Abstract DB querying so route files don't manage connections directly.
