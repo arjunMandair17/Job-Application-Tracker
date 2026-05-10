@@ -39,7 +39,7 @@ Job-Vault is my answer to the very relatable struggle that comes from searching 
 **Backend:** Railway  
 **Database:** Railway PostgreSQL
 
-Currently live and accessible at: [Job-Vault](https://job-application-tracker-eta-livid.vercel.app/)
+Currently live and accessible at: [Job-Vault](https://job-vault.app)
 
 ## Getting Started
 
