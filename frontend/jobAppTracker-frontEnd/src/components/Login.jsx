@@ -19,6 +19,7 @@ import Footer from "./Footer";
 const { Title, Text, Paragraph } = Typography;
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+const EXTENSION_ID = import.meta.env.VITE_EXTENSION_ID;
 
 /** Mirrors backend `/auth/register` validation in authRouter.js */
 const USERNAME_REGEX = /^[a-zA-Z0-9._@-]{1,254}$/;
@@ -121,7 +122,14 @@ export default function Login() {
       message.success(result.message || `${signInType} successful`);
       // Store JWT token in localStorage
       if (result.token) {
+
         localStorage.setItem('token', result.token);
+
+        // if the browser is chromium-based, send the token to the extension as well so it can verify authentication
+        if (typeof chrome !== "undefined" && chrome.runtime) {
+          chrome.runtime.sendMessage(EXTENSION_ID, {type: "AUTH_SUCCESS", token: result.token});
+        }
+        
       }
       navigate("/");
       return;
