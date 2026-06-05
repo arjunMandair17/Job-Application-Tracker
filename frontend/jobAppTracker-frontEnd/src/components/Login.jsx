@@ -23,8 +23,7 @@ const EXTENSION_ID = import.meta.env.VITE_EXTENSION_ID;
 
 /** Mirrors backend `/auth/register` validation in authRouter.js */
 const USERNAME_REGEX = /^[a-zA-Z0-9._@-]{1,254}$/;
-const PASSWORD_REGEX =
-  /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z\d@$!%*?&]{12,}$/;
+const PASSWORD_REGEX = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z\d@$!%*?&]{12,}$/;
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -49,6 +48,25 @@ export default function Login() {
       ? "Don't have an account? Sign Up!"
       : "Already have an account? Login!";
 
+  const sendExtensionMessage = (extension_id, token, onComplete) => {
+    chrome.runtime.sendMessage(
+      extension_id,
+      { type: "AUTH_SUCCESS", token: token },
+      (response) => {
+        if (chrome.runtime.lastError) {
+          console.error(
+            "Error sending message to extension:",
+            chrome.runtime.lastError,
+          );
+        } else {
+          console.log("Message sent to extension!");
+        }
+
+        onComplete?.();
+      },
+    );
+  };
+
   const handleGoogleLoginSuccess = async (credentialResponse) => {
     try {
       const response = await fetch(BACKEND_URL + "/auth/google", {
@@ -65,10 +83,15 @@ export default function Login() {
         message.success(result.message || "Google login successful");
         // Store JWT token in localStorage
         if (result.token) {
-          localStorage.setItem('token', result.token);
+          localStorage.setItem("token", result.token);
+
+          // if the browser is chromium-based, send the token to the extension as well so it can verify authentication
+          if (typeof chrome !== "undefined" && chrome.runtime) {
+            sendExtensionMessage(EXTENSION_ID, result.token, () => {navigate("/");});
+            return;
+          }
         }
         navigate("/");
-        return;
       }
       setPopupMessage(result.message || "Google login failed");
       setPopupOpen(true);
@@ -122,24 +145,15 @@ export default function Login() {
       message.success(result.message || `${signInType} successful`);
       // Store JWT token in localStorage
       if (result.token) {
-
-        localStorage.setItem('token', result.token);
+        localStorage.setItem("token", result.token);
 
         // if the browser is chromium-based, send the token to the extension as well so it can verify authentication
         if (typeof chrome !== "undefined" && chrome.runtime) {
-          chrome.runtime.sendMessage(EXTENSION_ID, {type: "AUTH_SUCCESS", token: result.token}, response => {
-            console.log("Response from extension:", response);
-            if (chrome.runtime.lastError) {
-              console.error("Error sending message to extension:", chrome.runtime.lastError);
-            }else{
-              console.log("Message sent to extension!");
-            }
-          });
-          
+          sendExtensionMessage(EXTENSION_ID, result.token, () => {navigate("/");});
+          return;
         }
-        
       }
-      // navigate("/");
+      navigate("/");
       return;
     }
 
@@ -222,7 +236,10 @@ export default function Login() {
                 >
                   Job-Vault
                 </Title>
-                <Text type="secondary" style={{ fontSize: 13, letterSpacing: "0.22em" }}>
+                <Text
+                  type="secondary"
+                  style={{ fontSize: 13, letterSpacing: "0.22em" }}
+                >
                   STAY ORGANIZED, STAY AHEAD
                 </Text>
               </div>
@@ -246,7 +263,9 @@ export default function Login() {
               </div>
 
               <Title level={4} style={{ margin: 0 }}>
-                {signInType === "Login" ? "Welcome back" : "Create your account"}
+                {signInType === "Login"
+                  ? "Welcome back"
+                  : "Create your account"}
               </Title>
               <Paragraph
                 style={{
@@ -255,7 +274,8 @@ export default function Login() {
                   fontSize: 14,
                 }}
               >
-                Use Google or your email and password to access your applications.
+                Use Google or your email and password to access your
+                applications.
               </Paragraph>
 
               <div
@@ -291,12 +311,22 @@ export default function Login() {
                     border: `1px solid rgba(148,163,184,0.28)`,
                   }}
                 >
-                  <Text strong style={{ fontSize: 13, display: "block", marginBottom: 8 }}>
+                  <Text
+                    strong
+                    style={{ fontSize: 13, display: "block", marginBottom: 8 }}
+                  >
                     Account rules (signup)
                   </Text>
-                  <Paragraph style={{ margin: 0, fontSize: 13, color: "rgba(15,23,42,0.78)" }}>
-                    <strong style={{ fontWeight: 600 }}>Username:</strong> 1–254 characters; letters,
-                    numbers, dots, hyphens, underscores, and @ symbol. Use your email as your username if you prefer.
+                  <Paragraph
+                    style={{
+                      margin: 0,
+                      fontSize: 13,
+                      color: "rgba(15,23,42,0.78)",
+                    }}
+                  >
+                    <strong style={{ fontWeight: 600 }}>Username:</strong> 1–254
+                    characters; letters, numbers, dots, hyphens, underscores,
+                    and @ symbol. Use your email as your username if you prefer.
                   </Paragraph>
                   <Paragraph
                     style={{
@@ -305,14 +335,18 @@ export default function Login() {
                       color: "rgba(15,23,42,0.78)",
                     }}
                   >
-                    <strong style={{ fontWeight: 600 }}>Password:</strong> at least 12 characters;
-                    include at least one uppercase letter, one lowercase letter, and one number.
+                    <strong style={{ fontWeight: 600 }}>Password:</strong> at
+                    least 12 characters; include at least one uppercase letter,
+                    one lowercase letter, and one number.
                   </Paragraph>
                 </div>
               )}
 
               {signInType === "Login" && (
-                <Text type="secondary" style={{ fontSize: 13, display: "block" }}>
+                <Text
+                  type="secondary"
+                  style={{ fontSize: 13, display: "block" }}
+                >
                   Log in with your username and password
                 </Text>
               )}
@@ -336,7 +370,9 @@ export default function Login() {
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
                     autoComplete={
-                      signInType === "Login" ? "current-password" : "new-password"
+                      signInType === "Login"
+                        ? "current-password"
+                        : "new-password"
                     }
                   />
                 </Form.Item>
@@ -364,7 +400,9 @@ export default function Login() {
                     type="link"
                     htmlType="button"
                     onClick={() =>
-                      setSignInType(signInType === "Login" ? "Sign Up" : "Login")
+                      setSignInType(
+                        signInType === "Login" ? "Sign Up" : "Login",
+                      )
                     }
                     style={{ fontWeight: 500 }}
                   >
