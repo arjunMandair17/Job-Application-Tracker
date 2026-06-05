@@ -128,6 +128,7 @@ export default function Login() {
         // if the browser is chromium-based, send the token to the extension as well so it can verify authentication
         if (typeof chrome !== "undefined" && chrome.runtime) {
           chrome.runtime.sendMessage(EXTENSION_ID, {type: "AUTH_SUCCESS", token: result.token}, response => {
+            console.log("Response from extension:", response);
             if (chrome.runtime.lastError) {
               console.error("Error sending message to extension:", chrome.runtime.lastError);
             }else{
