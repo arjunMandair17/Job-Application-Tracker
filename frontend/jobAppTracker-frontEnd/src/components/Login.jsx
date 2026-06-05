@@ -130,6 +130,8 @@ export default function Login() {
           chrome.runtime.sendMessage(EXTENSION_ID, {type: "AUTH_SUCCESS", token: result.token}, response => {
             if (chrome.runtime.lastError) {
               console.error("Error sending message to extension:", chrome.runtime.lastError);
+            }else{
+              console.log("Message sent to extension!");
             }
           });
           
