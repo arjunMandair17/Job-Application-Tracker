@@ -6,6 +6,7 @@ import authRouter from './routes/authRouter.js';
 import jobAppRouter from './routes/jobAppsRouter.js';
 import authMiddleware from './middleware/authMiddleware.js';
 import {rateLimit} from 'express-rate-limit';
+import cors from 'cors';
 
 const app = express();
 
@@ -25,8 +26,28 @@ if (!process.env.NODE_ENV) {
     throw new Error('NODE_ENV environment variable is required');
 }
 
-// Use FRONTEND_ORIGIN from env, or default for development
-const frontendOrigin = process.env.FRONTEND_ORIGIN;
+// Whitelist for allowed origins
+const whitelist = [process.env.FRONTEND_ORIGIN];
+if (process.env.CHROME_EXTENSION_ID) {
+    whitelist.push(`chrome-extension://${process.env.CHROME_EXTENSION_ID}`);
+}
+
+const corsOptions = {
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        if (whitelist.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    methods: 'GET,POST,PUT,DELETE,PATCH,OPTIONS',
+    allowedHeaders: 'Content-Type,Authorization'
+};
+
+// Use CORS middleware
+app.use(cors(corsOptions));
 
 // middleware
 app.use(express.json());
