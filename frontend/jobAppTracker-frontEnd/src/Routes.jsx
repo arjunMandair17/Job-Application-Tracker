@@ -3,6 +3,7 @@ import Home from "./pages/Home";
 import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
 import SingleApp from "./pages/SingleApp";
+import Privacy from "./pages/Privacy"
 
 const AppRoutes = () => {
     return (
@@ -12,6 +13,7 @@ const AppRoutes = () => {
                 <Route path="/login" element={<Auth />} />
                 <Route path="/user/:id" element={<Profile includeFooter={true} />} />
                 <Route path="/jobApps/:id" element={<SingleApp />} />
+                <Route path="/privacy" element={<Privacy />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
             </RouterRoutes>
         </BrowserRouter>
