@@ -2,8 +2,10 @@ import {
   GithubOutlined,
   LinkedinFilled,
   InstagramFilled,
+  ChromeOutlined,
 } from "@ant-design/icons";
 import { Link } from "react-router-dom";
+import { CHROME_EXTENSION_URL } from "./ExtensionAnnouncement";
 
 const Footer = () => {
   return (
@@ -37,7 +39,16 @@ const Footer = () => {
       </p>
       <p>Frontend using React, Tailwind CSS, and AntDesign.</p>
 
-      <p className="mt-2">
+      <p className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+        <a
+          href={CHROME_EXTENSION_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 text-gray-300 underline underline-offset-2 transition-colors hover:text-white"
+        >
+          <ChromeOutlined />
+          Chrome Extension
+        </a>
         <Link
           to="/privacy"
           className="text-gray-300 underline underline-offset-2 transition-colors hover:text-white"

@@ -18,6 +18,7 @@ import Profile from "./Profile";
 import Footer from "../components/Footer";
 import HomeTitle from "../components/HomeTitle";
 import HomeHighlights from "../components/HomeHighlights";
+import ExtensionAnnouncement from "../components/ExtensionAnnouncement";
 
 const { Header, Sider, Content } = Layout;
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
@@ -178,40 +179,43 @@ const Home = () => {
             }}
           >
             {activeMenuKey === "1" && (
-              <section
-                aria-label="Job-Vault home"
-                style={{
-                  minHeight: "clamp(520px, 62vh, 760px)",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  gap: 0,
-                  margin: "-14px -10px 0",
-                  padding:
-                    "clamp(28px, 4vw, 48px) clamp(12px, 3vw, 28px) clamp(20px, 3vw, 36px)",
-                  borderRadius: borderRadiusLG,
-                  background: `radial-gradient(120% 80% at 50% -15%, ${colorPrimaryBg} 0%, transparent 52%),
-                    linear-gradient(180deg, ${colorFillTertiary} 0%, transparent 42%)`,
-                  border: `1px solid ${colorBorderSecondary}`,
-                  boxShadow: `0 1px 0 color-mix(in srgb, ${colorPrimary} 18%, transparent) inset, 0 24px 48px rgba(15,23,42,0.06)`,
-                }}
-              >
-                <HomeTitle />
-                <div
-                  aria-hidden
+              <>
+                <ExtensionAnnouncement />
+                <section
+                  aria-label="Job-Vault home"
                   style={{
-                    margin: "8px auto 28px",
-                    height: 1,
-                    width: "min(280px, 72%)",
-                    background: `linear-gradient(90deg, transparent, color-mix(in srgb, ${colorPrimary} 45%, transparent), transparent)`,
+                    minHeight: "clamp(520px, 62vh, 760px)",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    gap: 0,
+                    margin: "-14px -10px 0",
+                    padding:
+                      "clamp(28px, 4vw, 48px) clamp(12px, 3vw, 28px) clamp(20px, 3vw, 36px)",
+                    borderRadius: borderRadiusLG,
+                    background: `radial-gradient(120% 80% at 50% -15%, ${colorPrimaryBg} 0%, transparent 52%),
+                      linear-gradient(180deg, ${colorFillTertiary} 0%, transparent 42%)`,
+                    border: `1px solid ${colorBorderSecondary}`,
+                    boxShadow: `0 1px 0 color-mix(in srgb, ${colorPrimary} 18%, transparent) inset, 0 24px 48px rgba(15,23,42,0.06)`,
                   }}
-                />
-                <Hero
-                  onAddApplication={() => setActiveMenuKey("4")}
-                  onViewApplications={() => setActiveMenuKey("3")}
-                />
-                <HomeHighlights />
-              </section>
+                >
+                  <HomeTitle />
+                  <div
+                    aria-hidden
+                    style={{
+                      margin: "8px auto 28px",
+                      height: 1,
+                      width: "min(280px, 72%)",
+                      background: `linear-gradient(90deg, transparent, color-mix(in srgb, ${colorPrimary} 45%, transparent), transparent)`,
+                    }}
+                  />
+                  <Hero
+                    onAddApplication={() => setActiveMenuKey("4")}
+                    onViewApplications={() => setActiveMenuKey("3")}
+                  />
+                  <HomeHighlights />
+                </section>
+              </>
             )}
 
             {activeMenuKey === "3" && (
